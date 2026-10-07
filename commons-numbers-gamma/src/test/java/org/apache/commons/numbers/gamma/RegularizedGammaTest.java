@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
 import org.junit.jupiter.api.Assertions;
@@ -22,39 +22,39 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Tests for {@link RegularizedGamma}.
- */
+
+
+
 class RegularizedGammaTest {
     private static final double EPS = Math.ulp(1.0);
 
-    /**
-     * Test argument A cannot be NaN, negative or zero.
-     *
-     * @param a Argument a
-     */
+
+
+
+
+
     @ParameterizedTest
     @ValueSource(doubles = {Double.NaN, 0, -1})
     void testInvalidArgumentA(double a) {
-        // No exception thrown. The result is NaN.
+
         assertRegularizedGamma(a, 1.0, Double.NaN);
     }
 
-    /**
-     * Test argument X cannot be NaN or negative.
-     *
-     * @param x Argument x
-     */
+
+
+
+
+
     @ParameterizedTest
     @ValueSource(doubles = {Double.NaN, -1})
     void testInvalidArgumentX(double x) {
-        // No exception thrown. The result is NaN.
+
         assertRegularizedGamma(1.0, x, Double.NaN);
     }
 
     @ParameterizedTest
     @CsvSource({
-        // Generated using matlab's gammainc function
+
         "0.250, 0.0, 0, 1",
         "0.250, 0.250, 0.74367794473146098, 0.25632205526853896",
         "0.250, 0.50, 0.84648640419167753, 0.15351359580832244",
@@ -120,34 +120,34 @@ class RegularizedGammaTest {
         Assertions.assertEquals(q, actualQ, q * eps);
     }
 
-    /**
-     * Test the incomplete gamma function uses the policy containing the epsilon and
-     * maximum iterations for series evaluations. The data targets each method computed
-     * using a series component to check the policy is not ignored.
-     *
-     * @see BoostGammaTest#testIGammaPolicy(double, double, double, double, double, double)
-     */
+
+
+
+
+
+
+
     @ParameterizedTest
     @CsvSource(value = {
-        // Method 2: x > 1.1, x - (1 / (3 * x)) < a
+
         "5.0,2.5,21.38827245393963,0.8911780189141513,2.6117275460603704,0.10882198108584876",
-        // Method 4: a < 20, x > 1.1, x - (1 / (3 * x)) > a
+
         "19.24400520324707,21.168405532836914,4.0308280447358675E15,0.3084240508178698,9.038282597080282E15,0.6915759491821302",
-        // Method 7: (x > 1000) && (a < x * 0.75f)
+
         "664.0791015625,1328.158203125,Infinity,4.90100553385586E-91,Infinity,1.0",
-        // Method 2: 0.5 < x < 1.1, x * 0.75f < a
+
         "0.9759566783905029,1.0735523700714111,0.33659577343416824,0.33179703084688433,0.6778671124302277,0.6682029691531157",
-        // Method 3: 0.5 < x < 1.1, x * 0.75f > a
+
         "0.4912221431732178,0.9824442863464355,0.2840949896471149,0.1575143024618326,1.519518937513272,0.8424856975381674",
     })
     void testIGammaPolicy(double a, double x, double upper, double q, double lower, double p) {
-        // Low iterations should fail to converge
+
         Assertions.assertThrows(ArithmeticException.class, () -> RegularizedGamma.P.value(a, x, EPS, 1), "p");
         Assertions.assertThrows(ArithmeticException.class, () -> RegularizedGamma.Q.value(a, x, EPS, 1), "q");
 
-        // Low epsilon should not be as accurate
 
-        // Ignore 0 or 1
+
+
         if ((int) p != p) {
             final double p1 = RegularizedGamma.P.value(a, x);
             final double p2 = RegularizedGamma.P.value(a, x, 1e-3, Integer.MAX_VALUE);
@@ -168,13 +168,13 @@ class RegularizedGammaTest {
         Assertions.assertEquals(-actual, RegularizedGamma.Q.derivative(a, x));
     }
 
-    /**
-     * Assert the regularized gamma exactly matches value p. q is tested as 1-p.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param p Expected p
-     */
+
+
+
+
+
+
+
     private static void assertRegularizedGamma(double a, double x, double p) {
         final double actualP = RegularizedGamma.P.value(a, x);
         final double actualQ = RegularizedGamma.Q.value(a, x);
@@ -182,9 +182,9 @@ class RegularizedGammaTest {
         Assertions.assertEquals(1 - p, actualQ);
     }
 
-    /**
-     * Assert x is closer to the expected result than y.
-     */
+
+
+
     private static void assertCloser(String msg, double expected, double x, double y) {
         final double dx = Math.abs(expected - x);
         final double dy = Math.abs(expected - y);

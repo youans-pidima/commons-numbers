@@ -1,28 +1,28 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.combinatorics;
 
-/**
- * <a href="https://mathworld.wolfram.com/Factorial.html">Factorial of a number</a>.
- */
+
+
+
 public final class Factorial {
 
-    /** All long-representable factorials. */
+
     static final long[] FACTORIALS = {
                        1L,                  1L,                   2L,
                        6L,                 24L,                 120L,
@@ -33,7 +33,7 @@ public final class Factorial {
         6402373705728000L, 121645100408832000L, 2432902008176640000L
     };
 
-    /** All factorials that can be represented as a double (values up to 170!). */
+
     private static final double[] DOUBLE_FACTORIALS = {
         1,
         1,
@@ -208,20 +208,20 @@ public final class Factorial {
         7.257415615307999E306
     };
 
-    /** Private constructor. */
+
     private Factorial() {
-        // intentionally empty.
+
     }
 
-    /**
-     * Computes the factorial of {@code n}.
-     *
-     * @param n Argument.
-     * @return {@code n!}
-     * @throws IllegalArgumentException if {@code n < 0}.
-     * @throws IllegalArgumentException if {@code n > 20} (the factorial
-     * value is too large to fit in a {@code long}).
-     */
+
+
+
+
+
+
+
+
+
     public static long value(int n) {
         if (n < 0 ||
             n > 20) {
@@ -232,19 +232,19 @@ public final class Factorial {
         return FACTORIALS[n];
     }
 
-    /**
-     * Computes the factorial of {@code n}.
-     *
-     * <p>The result should be small enough to fit into a {@code double}: The
-     * largest {@code n} for which {@code n!} does not exceed
-     * {@code Double.MAX_VALUE} is 170. {@code Double.POSITIVE_INFINITY} is
-     * returned for {@code n > 170}.
-     *
-     * @param n Argument.
-     * @return {@code n!}
-     * @throws IllegalArgumentException if {@code n < 0}.
-     * @since 1.1
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
     public static double doubleValue(int n) {
         if (n < 0) {
             throw new CombinatoricsException(CombinatoricsException.NEGATIVE, n);
@@ -255,15 +255,15 @@ public final class Factorial {
         return Double.POSITIVE_INFINITY;
     }
 
-    /**
-     * Return the factorial of {@code n}.
-     *
-     * <p>Note: This is an internal method that exposes the tabulated factorials that can
-     * be represented as a double. No checks are performed on the argument.
-     *
-     * @param n Argument (must be in [0, 170])
-     * @return n!
-     */
+
+
+
+
+
+
+
+
+
     static double uncheckedFactorial(int n) {
         return DOUBLE_FACTORIALS[n];
     }

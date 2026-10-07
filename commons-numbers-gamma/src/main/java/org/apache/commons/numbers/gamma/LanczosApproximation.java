@@ -1,40 +1,40 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
-/**
- * <a href="https://mathworld.wolfram.com/LanczosApproximation.html">
- * Lanczos approximation</a> to the Gamma function.
- *
- * It is related to the Gamma function by the following equation
- * \[
- * \Gamma(x) = \sqrt{2\pi} \, \frac{(g + x + \frac{1}{2})^{x + \frac{1}{2}} \, e^{-(g + x + \frac{1}{2})} \, \mathrm{lanczos}(x)}
- *                                 {x}
- * \]
- * where \( g \) is the Lanczos constant.
- *
- * See equations (1) through (5), and Paul Godfrey's
- * <a href="https://my.fit.edu/~gabdo/gamma.txt">Note on the computation
- * of the convergent Lanczos complex Gamma approximation</a>.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public final class LanczosApproximation {
-    /** \( g = \frac{607}{128} \). */
+
     private static final double LANCZOS_G = 607d / 128d;
-    /** Lanczos coefficients. */
+
     private static final double[] LANCZOS = {
         0.99999999999999709182,
         57.156235665862923517,
@@ -53,17 +53,17 @@ public final class LanczosApproximation {
         .36899182659531622704e-5,
     };
 
-    /** Private constructor. */
+
     private LanczosApproximation() {
-        // intentionally empty.
+
     }
 
-    /**
-     * Computes the Lanczos approximation.
-     *
-     * @param x Argument.
-     * @return the Lanczos approximation.
-     */
+
+
+
+
+
+
     public static double value(final double x) {
         double sum = 0;
         for (int i = LANCZOS.length - 1; i > 0; i--) {
@@ -72,11 +72,11 @@ public final class LanczosApproximation {
         return sum + LANCZOS[0];
     }
 
-    /**
-     * Return the Lanczos constant \( g = \frac{607}{128} \).
-     *
-     * @return the Lanczos constant.
-     */
+
+
+
+
+
     public static double g() {
         return LANCZOS_G;
     }

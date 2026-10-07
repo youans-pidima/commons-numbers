@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.field;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,9 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Tests for {@link FP64}.
- */
+
+
+
 class FP64Test {
     @ParameterizedTest
     @ValueSource(doubles = {-5.67e89, -0.0, 0.0, Double.POSITIVE_INFINITY})
@@ -37,7 +37,7 @@ class FP64Test {
         Assertions.assertEquals(a.longValue(), b.longValue());
         Assertions.assertEquals(a.byteValue(), b.byteValue());
         Assertions.assertEquals(a.toString(), b.toString());
-        // Hash code for -0.0 and 0.0 are the same
+
         if (v == 0) {
             Assertions.assertEquals(Double.valueOf(0.0).hashCode(), b.hashCode());
         } else {
@@ -50,13 +50,13 @@ class FP64Test {
         final FP64 a = FP64.of(1.23);
         final FP64 b = FP64.of(4.56);
 
-        // Same instance
+
         Assertions.assertEquals(a, a);
-        // Same value
+
         Assertions.assertEquals(a, FP64.of(a.doubleValue()));
-        // Different value
+
         Assertions.assertNotEquals(a, b);
-        // Different object
+
         Assertions.assertNotEquals(a, new Object());
         Assertions.assertNotEquals(a, null);
     }
@@ -64,13 +64,13 @@ class FP64Test {
     @ParameterizedTest
     @ValueSource(doubles = {1.23, 0.0, -0.0})
     void testEqualsCloseValues(double value) {
-        // Use very close values
+
         final FP64 a = FP64.of(value);
         final FP64 b = FP64.of(Math.nextUp(value));
 
-        // Same value
+
         Assertions.assertEquals(a, FP64.of(value));
-        // Different value
+
         Assertions.assertNotEquals(a, b);
     }
 
@@ -88,7 +88,7 @@ class FP64Test {
     void testOne(double value) {
         final FP64 a = FP64.of(value);
         Assertions.assertEquals(1d, a.one().doubleValue());
-        // Test definition
+
         Assertions.assertEquals(a, a.one().multiply(a));
     }
 
@@ -97,7 +97,7 @@ class FP64Test {
     void testZero(double value) {
         final FP64 a = FP64.of(value);
         Assertions.assertEquals(0d, a.zero().doubleValue());
-        // Test definition
+
         Assertions.assertEquals(a, a.zero().add(a));
     }
 
@@ -107,7 +107,7 @@ class FP64Test {
         Assertions.assertTrue(FP64.of(0.5).add(FP64.of(0.5)).isOne());
         FP64 value = FP64.of(1e300);
         Assertions.assertTrue(value.divide(value).isOne());
-        // avoid weirdness
+
         Assertions.assertFalse(FP64.of(3).isOne());
         Assertions.assertFalse(FP64.of(0.0).isOne());
     }
@@ -118,7 +118,7 @@ class FP64Test {
         Assertions.assertTrue(FP64.of(0.5).subtract(FP64.of(0.5)).isZero());
         FP64 value = FP64.of(1e300);
         Assertions.assertTrue(value.multiply(value.zero()).isZero());
-        // avoid weirdness
+
         Assertions.assertFalse(FP64.of(3).isZero());
         Assertions.assertFalse(FP64.of(1.0).isZero());
     }

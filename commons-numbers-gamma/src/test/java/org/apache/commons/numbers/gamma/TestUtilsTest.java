@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
 import java.math.BigDecimal;
@@ -21,10 +21,10 @@ import org.apache.commons.numbers.gamma.TestUtils.ErrorStatistics;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for {@link TestUtils}.
- * This verifies the custom ULP assertions function as expected.
- */
+
+
+
+
 class TestUtilsTest {
     @Test
     void testAssertEquals() {
@@ -41,19 +41,19 @@ class TestUtilsTest {
         Assertions.assertEquals(30, TestUtils.assertEquals(x, x + 30 * ulp, 30));
         Assertions.assertEquals(-30, TestUtils.assertEquals(x, x - 30 * ulp, 30));
 
-        // Check order and sign
+
         Assertions.assertThrows(AssertionError.class, () -> TestUtils.assertEquals(-x - ulp, x, 0));
         Assertions.assertEquals(1, TestUtils.assertEquals(-x - ulp, -x, 1));
         Assertions.assertEquals(1, TestUtils.assertEquals(x - ulp, x, 1));
         Assertions.assertEquals(2, TestUtils.assertEquals(x - ulp, x + ulp, 2));
 
-        // Opposite signs
+
         Assertions.assertThrows(AssertionError.class, () -> TestUtils.assertEquals(x, -x, 500000));
     }
 
     @Test
     void testAssertEqualsZero() {
-        // These are not binary equal but for numeric purposes they are treated as equal
+
         final double[] zero = {-0.0, 0.0};
         for (final double a : zero) {
             for (final double b : zero) {
@@ -63,7 +63,7 @@ class TestUtilsTest {
             }
         }
 
-        // Difference from zero
+
         final double x = Double.MIN_VALUE;
         Assertions.assertThrows(AssertionError.class, () -> TestUtils.assertEquals(0.0, x, 0));
         Assertions.assertEquals(1, TestUtils.assertEquals(0.0, x, 1));
@@ -109,13 +109,13 @@ class TestUtilsTest {
         Assertions.assertEquals(30, TestUtils.assertEquals(bdx, x + 30 * ulp, 30));
         Assertions.assertEquals(-30, TestUtils.assertEquals(bdx, x - 30 * ulp, 30));
 
-        // Opposite signs
+
         Assertions.assertThrows(AssertionError.class, () -> TestUtils.assertEquals(bdx, -x, 500000));
 
-        // High precision: Add 1/4 ulp to the value:
-        //    ---|----------|----------|-----
-        //       -1         x  |       +1
-        //                     y
+
+
+
+
         final BigDecimal bdy = bdx.add(new BigDecimal(ulp).divide(BigDecimal.valueOf(4)));
         Assertions.assertEquals(0, TestUtils.assertEquals(bdy, x, 0));
         Assertions.assertThrows(AssertionError.class, () -> TestUtils.assertEquals(bdy, x + ulp, 0));
@@ -127,7 +127,7 @@ class TestUtilsTest {
 
     @Test
     void testBigDecimalAssertEqualsZero() {
-        // These are not binary equal but for numeric purposes they are treated as equal
+
         final double[] zero = {-0.0, 0.0};
         final BigDecimal a = BigDecimal.ZERO;
         for (final double b : zero) {
@@ -136,7 +136,7 @@ class TestUtilsTest {
             Assertions.assertEquals(0, TestUtils.assertEquals(a, b, 30));
         }
 
-        // Difference from zero
+
         final double x = Double.MIN_VALUE;
         Assertions.assertThrows(AssertionError.class, () -> TestUtils.assertEquals(a, x, 0));
         Assertions.assertEquals(1, TestUtils.assertEquals(a, x, 1));
@@ -190,8 +190,8 @@ class TestUtilsTest {
     @Test
     void testErrorStatisticsMean() {
         final ErrorStatistics stats = new ErrorStatistics();
-        // https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
-        // Peters' example
+
+
         stats.add(1);
         stats.add(1e100);
         stats.add(1);

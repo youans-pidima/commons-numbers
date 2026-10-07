@@ -1,28 +1,28 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.core;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for examples contained in the user guide.
- */
+
+
+
 class UserGuideTest {
 
     @Test
@@ -77,24 +77,24 @@ class UserGuideTest {
 
     @Test
     void testPrecision1() {
-        // Default allows no numbers between
+
         Assertions.assertTrue(Precision.equals(1000.0, 1000.0));
         Assertions.assertTrue(Precision.equals(1000.0, 1000.0 + Math.ulp(1000.0)));
         Assertions.assertFalse(Precision.equals(1000.0, 1000.0 + 2 * Math.ulp(1000.0)));
 
-        // Absolute - tolerance is floating-point
+
         Assertions.assertFalse(Precision.equals(1000.0, 1001.0));
         Assertions.assertTrue(Precision.equals(1000.0, 1001.0, 1.0));
         Assertions.assertTrue(Precision.equals(1000.0, 1000.0 + Math.ulp(1000.0), 0.0));
 
-        // ULP - tolerance is integer
+
         Assertions.assertFalse(Precision.equals(1000.0, 1001.0));
         Assertions.assertFalse(Precision.equals(1000.0, 1001.0, 1));
         Assertions.assertFalse(Precision.equals(1000.0, 1000.0 + 2 * Math.ulp(1000.0), 1));
         Assertions.assertTrue(Precision.equals(1000.0, 1000.0 + 2 * Math.ulp(1000.0), 2));
         Assertions.assertFalse(Precision.equals(1000.0, 1000.0 + 3 * Math.ulp(1000.0), 2));
 
-        // Relative
+
         Assertions.assertFalse(Precision.equalsWithRelativeTolerance(1000.0, 1001.0, 1e-6));
         Assertions.assertTrue(Precision.equalsWithRelativeTolerance(1000.0, 1001.0, 1e-3));
     }
@@ -230,19 +230,19 @@ class UserGuideTest {
         DD y = DD.of(b);
         Assertions.assertFalse(x.multiply(y).isFinite());
 
-        // Create fractional representation as [0.5, 1) * 2^b
+
         int[] xb = {0};
         int[] yb = {0};
-        x = x.frexp(xb);       // (0.75, 0) * 2^1024
-        y = y.frexp(yb);       // (0.5, 0)  * 2^-1019
+        x = x.frexp(xb);
+        y = y.frexp(yb);
         Assertions.assertEquals(0.75, x.doubleValue());
         Assertions.assertEquals(0.5, y.doubleValue());
         Assertions.assertEquals(1024, xb[0]);
         Assertions.assertEquals(-1019, yb[0]);
 
-        DD z = x.multiply(y);  // (0.375, 0)
+        DD z = x.multiply(y);
         Assertions.assertEquals(0.375, z.doubleValue());
-        // Rescale by 2^5
+
         Assertions.assertEquals(a * b, z.scalb(xb[0] + yb[0]).doubleValue());
     }
 }

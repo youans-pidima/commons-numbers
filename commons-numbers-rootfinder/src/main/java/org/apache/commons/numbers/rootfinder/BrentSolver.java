@@ -1,62 +1,62 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.rootfinder;
 
 import java.util.function.DoubleUnaryOperator;
 
-/**
- * This class implements the <a href="https://mathworld.wolfram.com/BrentsMethod.html">
- * Brent algorithm</a> for finding zeros of real univariate functions.
- * The function should be continuous but not necessarily smooth.
- * The {@code solve} method returns a zero {@code x} of the function {@code f}
- * in the given interval {@code [a, b]} to within a tolerance
- * {@code 2 eps abs(x) + t} where {@code eps} is the relative accuracy and
- * {@code t} is the absolute accuracy.
- * <p>The given interval must bracket the root.</p>
- * <p>
- *  The reference implementation is given in chapter 4 of
- *  <blockquote>
- *   <b>Algorithms for Minimization Without Derivatives</b>,
- *   <em>Richard P. Brent</em>,
- *   Dover, 2002
- *  </blockquote>
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class BrentSolver {
-    /** Relative accuracy. */
+
     private final double relativeAccuracy;
-    /** Absolute accuracy. */
+
     private final double absoluteAccuracy;
-    /** Function accuracy. */
+
     private final double functionValueAccuracy;
 
-    /**
-     * Construct a solver.
-     *
-     * <p>The accuracies must be finite and non-negative.
-     * Accuracies of zero are accepted, but the
-     * search may then only terminate when it finds a value within 1 ULP of
-     * zero.
-     *
-     * @param relativeAccuracy Relative accuracy.
-     * @param absoluteAccuracy Absolute accuracy.
-     * @param functionValueAccuracy Function value accuracy.
-     * @throws IllegalArgumentException if any accuracy is NaN, infinite or
-     * negative.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public BrentSolver(double relativeAccuracy,
                        double absoluteAccuracy,
                        double functionValueAccuracy) {
@@ -66,16 +66,16 @@ public class BrentSolver {
              false);
     }
 
-    /**
-     * Private constructor which does not throw exceptions.
-     * This exists to raise an exception before invocation of the private constructor;
-     * this mitigates Finalizer attacks (see SpotBugs CT_CONSTRUCTOR_THROW).
-     *
-     * @param relativeAccuracy Relative accuracy.
-     * @param absoluteAccuracy Absolute accuracy.
-     * @param functionValueAccuracy Function value accuracy.
-     * @param ignored Ignored flag.
-     */
+
+
+
+
+
+
+
+
+
+
     private BrentSolver(double relativeAccuracy,
                         double absoluteAccuracy,
                         double functionValueAccuracy,
@@ -85,47 +85,47 @@ public class BrentSolver {
         this.functionValueAccuracy = functionValueAccuracy;
     }
 
-    /**
-     * Search the function's zero within the given interval.
-     *
-     * @param function Function to solve.
-     * @param min Lower bound.
-     * @param max Upper bound.
-     * @return the root.
-     * @throws IllegalArgumentException if {@code min > max}; or
-     * {@code min} or {@code max} are non-finite.
-     * @throws IllegalArgumentException if the given interval does
-     * not bracket the root.
-     * @throws IllegalArgumentException if the function evaluates as NaN.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
     public double findRoot(DoubleUnaryOperator function,
                            double min,
                            double max) {
-        // Avoid overflow computing the initial value: 0.5 * (min + max)
-        // Note: This sum is invalid if min == max == Double.MIN_VALUE
-        // so detect this edge case. It will raise a bracketing exception
-        // if min is not the root within the configured function accuracy;
-        // otherwise min is returned.
+
+
+
+
+
         final double initial = min == max ? min : 0.5 * min + 0.5 * max;
         return findRoot(function, min, initial, max);
     }
 
-    /**
-     * Search the function's zero within the given interval,
-     * starting from the given estimate.
-     *
-     * @param function Function to solve.
-     * @param min Lower bound.
-     * @param initial Initial guess.
-     * @param max Upper bound.
-     * @return the root.
-     * @throws IllegalArgumentException if {@code min > max};
-     * {@code min} or {@code max} are non-finite; or
-     * {@code initial} is not in the {@code [min, max]} interval.
-     * @throws IllegalArgumentException if the given interval does
-     * not bracket the root.
-     * @throws IllegalArgumentException if the function evaluates as NaN.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public double findRoot(DoubleUnaryOperator function,
                            double min,
                            double initial,
@@ -140,7 +140,7 @@ public class BrentSolver {
             throw new SolverException(SolverException.OUT_OF_RANGE, initial, min, max);
         }
 
-        // A NaN invalidates convergence
+
         final DoubleUnaryOperator func = x -> {
             final double fx = function.applyAsDouble(x);
             if (Double.isNaN(fx)) {
@@ -149,30 +149,30 @@ public class BrentSolver {
             return fx;
         };
 
-        // Return the initial guess if it is good enough.
+
         final double yInitial = func.applyAsDouble(initial);
         if (Math.abs(yInitial) <= functionValueAccuracy) {
             return initial;
         }
 
-        // Return the first endpoint if it is good enough.
+
         final double yMin = func.applyAsDouble(min);
         if (Math.abs(yMin) <= functionValueAccuracy) {
             return min;
         }
 
-        // Reduce interval if min and initial bracket the root.
+
         if (Double.compare(yInitial * yMin, 0.0) < 0) {
             return brent(func, min, initial, yMin, yInitial);
         }
 
-        // Return the second endpoint if it is good enough.
+
         final double yMax = func.applyAsDouble(max);
         if (Math.abs(yMax) <= functionValueAccuracy) {
             return max;
         }
 
-        // Reduce interval if initial and max bracket the root.
+
         if (Double.compare(yInitial * yMax, 0.0) < 0) {
             return brent(func, initial, max, yInitial, yMax);
         }
@@ -180,23 +180,23 @@ public class BrentSolver {
         throw new SolverException(SolverException.BRACKETING, min, yMin, max, yMax);
     }
 
-    /**
-     * Search for a zero inside the provided interval.
-     * This implementation is based on the algorithm described at page 58 of
-     * the book
-     * <blockquote>
-     *  <b>Algorithms for Minimization Without Derivatives</b>,
-     *  <i>Richard P. Brent</i>,
-     *  Dover 0-486-41998-3
-     * </blockquote>
-     *
-     * @param func Function to solve.
-     * @param lo Lower bound of the search interval.
-     * @param hi Higher bound of the search interval.
-     * @param fLo Function value at the lower bound of the search interval.
-     * @param fHi Function value at the higher bound of the search interval.
-     * @return the value where the function is zero.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private double brent(DoubleUnaryOperator func,
                          double lo, double hi,
                          double fLo, double fHi) {
@@ -222,36 +222,36 @@ public class BrentSolver {
                 fc = fa;
             }
 
-            // NUMBERS-211: Allow convergence at machine tolerance
+
             final double tol = Math.max(2 * eps * Math.abs(b) + t, Math.ulp(b));
             final double m = 0.5 * (c - b);
 
-            // |fb| <= |fc| and they have opposite signs (bracket the root).
-            // If a line is drawn between them, the midpoint will be
-            // of the opposite sign (or zero). If the distance to the midpoint is
-            // less than the tolerance, b is within tolerance to the root.
+
+
+
+
             if (Math.abs(m) <= tol ||
                 equalsZero(fb))  {
                 return b;
             }
             if (Math.abs(e) < tol ||
                 Math.abs(fa) <= Math.abs(fb)) {
-                // Force bisection.
+
                 d = m;
                 e = d;
             } else {
                 final double s = fb / fa;
                 double p;
                 double q;
-                // The equality test (a == c) is intentional,
-                // it is part of the original Brent's method and
-                // it should NOT be replaced by proximity test.
+
+
+
                 if (a == c) {
-                    // Linear interpolation.
+
                     p = 2 * m * s;
                     q = 1 - s;
                 } else {
-                    // Inverse quadratic interpolation.
+
                     q = fa / fc;
                     final double r = fb / fc;
                     p = s * (2 * m * q * (q - r) - (b - a) * (r - 1));
@@ -264,9 +264,9 @@ public class BrentSolver {
                 }
                 if (p >= 1.5 * m * q - Math.abs(tol * q) ||
                     p >= Math.abs(0.5 * e * q)) {
-                    // Inverse quadratic interpolation gives a value
-                    // in the wrong direction, or progress is slow.
-                    // Fall back to bisection.
+
+
+
                     d = m;
                     e = d;
                 } else {
@@ -295,26 +295,26 @@ public class BrentSolver {
         }
     }
 
-    /**
-     * Return true if the value is within 1 ULP of zero.
-     *
-     * @param value Value
-     * @return true if zero within a 1 ULP tolerance
-     */
+
+
+
+
+
+
     private static boolean equalsZero(double value) {
         return Math.abs(value) <= Double.MIN_VALUE;
     }
 
-    /**
-     * Check the accuracy is finite and non-negative.
-     * Negative, infinite and NaN accuracies prevent valid convergence checks.
-     *
-     * @param name Name of the accuracy.
-     * @param accuracy Accuracy.
-     * @return accuracy
-     * @throws IllegalArgumentException if {@code accuracy} is NaN, infinite
-     * or negative.
-     */
+
+
+
+
+
+
+
+
+
+
     private static double checkAccuracy(String name, double accuracy) {
         if (!(accuracy >= 0 && accuracy <= Double.MAX_VALUE)) {
             throw new SolverException(SolverException.INVALID_ACCURACY, name, accuracy);
@@ -322,13 +322,13 @@ public class BrentSolver {
         return accuracy;
     }
 
-    /**
-     * Check the value is finite.
-     *
-     * @param name Name of the value.
-     * @param value Value.
-     * @throws IllegalArgumentException if {@code value} is NaN or infinite.
-     */
+
+
+
+
+
+
+
     private static void checkFinite(String name, double value) {
         if (!Double.isFinite(value)) {
             throw new SolverException(SolverException.NON_FINITE, name, value);

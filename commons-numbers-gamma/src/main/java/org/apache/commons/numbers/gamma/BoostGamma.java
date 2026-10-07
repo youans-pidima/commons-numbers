@@ -1,27 +1,27 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-//  Copyright John Maddock 2006-7, 2013-20.
-//  Copyright Paul A. Bristow 2007, 2013-14.
-//  Copyright Nikhar Agrawal 2013-14
-//  Copyright Christopher Kormanyos 2013-14, 2020
-//  Use, modification and distribution are subject to the
-//  Boost Software License, Version 1.0. (See accompanying file
-//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.gamma;
 
@@ -31,94 +31,94 @@ import org.apache.commons.numbers.core.Sum;
 import org.apache.commons.numbers.fraction.GeneralizedContinuedFraction;
 import org.apache.commons.numbers.fraction.GeneralizedContinuedFraction.Coefficient;
 
-/**
- * Implementation of the
- * <a href="https://mathworld.wolfram.com/RegularizedGammaFunction.html">Regularized Gamma functions</a> and
- * <a href="https://mathworld.wolfram.com/IncompleteGammaFunction.html">Incomplete Gamma functions</a>.
- *
- * <p>This code has been adapted from the <a href="https://www.boost.org/">Boost</a>
- * {@code c++} implementation {@code <boost/math/special_functions/gamma.hpp>}.
- * All work is copyright to the original authors and subject to the Boost Software License.
- *
- * @see
- * <a href="https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/sf_gamma.html">
- * Boost C++ Gamma functions</a>
- */
-final class BoostGamma {
-    //
-    // Code ported from Boost 1.77.0
-    //
-    // boost/math/special_functions/gamma.hpp
-    // boost/math/special_functions/detail/igamma_large.hpp
-    // boost/math/special_functions/lanczos.hpp
-    //
-    // Original code comments are preserved.
-    //
-    // Changes to the Boost implementation:
-    // - Update method names to replace underscores with camel case
-    // - Explicitly inline the polynomial function evaluation
-    //   using Horner's method (https://en.wikipedia.org/wiki/Horner%27s_method)
-    // - Remove checks for under/overflow. In this implementation no error is raised
-    //   for overflow (infinity is returned) or underflow (sub-normal or zero is returned).
-    //   This follows the conventions in java.lang.Math for the same conditions.
-    // - Removed the pointer p_derivative in the gammaIncompleteImp. This is used
-    //   in the Boost code for the gamma_(p|q)_inv functions for a derivative
-    //   based inverse function. This is currently not supported.
-    // - Added extended precision arithmetic for some series summations or other computations.
-    //   The Boost default policy is to evaluate in long double for a double result. Extended
-    //   precision is not possible for the entire computation but has been used where
-    //   possible for some terms to reduce errors. Error reduction verified on the test data.
-    // - Altered the tgamma(x) function to use the double-precision NSWC Library of Mathematics
-    //   Subroutines when the error is lower. This is for the non Lanczos code.
-    // - Altered the condition used for the asymptotic approximation method to avoid
-    //   loss of precision in the series summation when a ~ z.
-    // - Altered series generators to use integer counters added to the double term
-    //   replacing directly incrementing a double term. When the term is large it cannot
-    //   be incremented: 1e16 + 1 == 1e16.
-    // - Removed unreachable code branch in tgammaDeltaRatioImpLanczos when z + delta == z.
-    //
-    // Note:
-    // The major source of error is in the function regularisedGammaPrefix when computing
-    // (z^a)(e^-z)/tgamma(a) with extreme input to the power and exponential terms.
-    // An extended precision pow and exp function returning a quad length result would
-    // be required to reduce error for these arguments. Tests using the Dfp class
-    // from o.a.c.math4.legacy.core have been demonstrated to effectively eliminate the
-    // errors from the power terms and improve accuracy on the current test data.
-    // In the interest of performance the Dfp class is not used in this version.
 
-    /** Default epsilon value for relative error.
-     * This is equal to the Boost constant {@code boost::math::tools::epsilon<double>()}. */
+
+
+
+
+
+
+
+
+
+
+
+
+final class BoostGamma {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static final double EPSILON = 0x1.0p-52;
-    /** Value for the sqrt of the epsilon for relative error.
-     * This is equal to the Boost constant {@code boost::math::tools::root_epsilon<double>()}. */
+
+
     private static final double ROOT_EPSILON = 1.4901161193847656E-8;
-    /** Approximate value for ln(Double.MAX_VALUE).
-     * This is equal to the Boost constant {@code boost::math::tools::log_max_value<double>()}.
-     * No term {@code x} should be used in {@code exp(x)} if {@code x > LOG_MAX_VALUE} to avoid
-     * overflow. */
+
+
+
+
     private static final int LOG_MAX_VALUE = 709;
-    /** Approximate value for ln(Double.MIN_VALUE).
-     * This is equal to the Boost constant {@code boost::math::tools::log_min_value<double>()}.
-     * No term {@code x} should be used in {@code exp(x)} if {@code x < LOG_MIN_VALUE} to avoid
-     * underflow to sub-normal or zero. */
+
+
+
+
     private static final int LOG_MIN_VALUE = -708;
-    /** The largest factorial that can be represented as a double.
-     * This is equal to the Boost constant {@code boost::math::max_factorial<double>::value}. */
+
+
     private static final int MAX_FACTORIAL = 170;
-    /** The largest integer value for gamma(z) that can be represented as a double. */
+
     private static final int MAX_GAMMA_Z = MAX_FACTORIAL + 1;
-    /** ln(sqrt(2 pi)). Computed to 25-digits precision. */
+
     private static final double LOG_ROOT_TWO_PI = 0.9189385332046727417803297;
-    /** ln(pi). Computed to 25-digits precision. */
+
     private static final double LOG_PI = 1.144729885849400174143427;
-    /** Euler's constant. */
+
     private static final double EULER = 0.5772156649015328606065120900824024310;
-    /** The threshold value for choosing the Lanczos approximation. */
+
     private static final int LANCZOS_THRESHOLD = 20;
-    /** 2^53. */
+
     private static final double TWO_POW_53 = 0x1.0p53;
 
-    /** All factorials that can be represented as a double. Size = 171. */
+
     private static final double[] FACTORIAL = {
         1,
         1,
@@ -293,55 +293,55 @@ final class BoostGamma {
         0.7257415615307998967396728211129263114717e307,
     };
 
-    /**
-     * 53-bit precision implementation of the Lanczos approximation.
-     *
-     * <p>This implementation is in partial fraction form with the leading constant
-     * of \( \sqrt{2\pi} \) absorbed into the sum.
-     *
-     * <p>It is related to the Gamma function by the following equation
-     * \[
-     * \Gamma(z) = \frac{(z + g - 0.5)^{z - 0.5}}{e^{z + g - 0.5}} \mathrm{lanczos}(z)
-     * \]
-     * where \( g \) is the Lanczos constant.
-     *
-     * <h2>Warning</h2>
-     *
-     * <p>This is not a substitute for {@link LanczosApproximation}. The approximation is
-     * written in partial fraction form with the leading constants absorbed by the
-     * coefficients in the sum.
-     *
-     * @see <a href="https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/lanczos.html">
-     * Boost Lanczos Approximation</a>
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static final class Lanczos {
-        // Optimal values for G for each N are taken from
-        // http://web.mala.bc.ca/pughg/phdThesis/phdThesis.pdf,
-        // as are the theoretical error bounds.
-        //
-        // Constants calculated using the method described by Godfrey
-        // http://my.fit.edu/~gabdo/gamma.txt and elaborated by Toth at
-        // http://www.rskey.org/gamma.htm using NTL::RR at 1000 bit precision.
 
-        //
-        // Lanczos Coefficients for N=13 G=6.024680040776729583740234375
-        // Max experimental error (with arbitrary precision arithmetic) 1.196214e-17
-        // Generated with compiler: Microsoft Visual C++ version 8.0 on Win32 at Mar 23 2006
-        //
 
-        /**
-         * Lanczos constant G.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         static final double G = 6.024680040776729583740234375;
 
-        /**
-         * Lanczos constant G - half.
-         *
-         * <p>Note: The form {@code (g - 0.5)} is used when computing the gamma function.
-         */
+
+
+
+
+
         static final double GMH = 5.524680040776729583740234375;
 
-        /** Common denominator used for the rational evaluation. */
+
         private static final int[] DENOM = {
             0,
             39916800,
@@ -358,17 +358,17 @@ final class BoostGamma {
             1
         };
 
-        /** Private constructor. */
+
         private Lanczos() {
-            // intentionally empty.
+
         }
 
-        /**
-         * Computes the Lanczos approximation.
-         *
-         * @param z Argument.
-         * @return the Lanczos approximation.
-         */
+
+
+
+
+
+
         static double lanczosSum(double z) {
             final double[] num = {
                 23531376880.41075968857200767445163675473,
@@ -388,14 +388,14 @@ final class BoostGamma {
             return evaluateRational(num, DENOM, z);
         }
 
-        /**
-         * Computes the Lanczos approximation scaled by {@code exp(g)}.
-         *
-         * @param z Argument.
-         * @return the scaled Lanczos approximation.
-         */
+
+
+
+
+
+
         static double lanczosSumExpGScaled(double z) {
-            // As above with numerator divided by exp(g) = 413.509...
+
             final double[] num = {
                 56906521.91347156388090791033559122686859,
                 103794043.1163445451906271053616070238554,
@@ -414,37 +414,37 @@ final class BoostGamma {
             return evaluateRational(num, DENOM, z);
         }
 
-        /**
-         * Evaluate the rational number as two polynomials.
-         *
-         * <p>Adapted from {@code boost/math/tools/detail/rational_horner3_13.hpp}.
-         * Note: There are 3 variations of the unrolled rational evaluation.
-         * These methods change the order based on the sign of x. This
-         * should be used for the Lanczos code as this comment in
-         * {@code boost/math/tools/rational.hpp} notes:
-         *
-         * <blockquote>
-         * However, there
-         * are some tricks we can use to prevent overflow that might otherwise
-         * occur in polynomial evaluation, if z is large.  This is important
-         * in our Lanczos code for example.
-         * </blockquote>
-         *
-         * @param a Coefficients of the numerator polynomial
-         * @param b Coefficients of the denominator polynomial
-         * @param x Value
-         * @return the rational number
-         */
-        private static double evaluateRational(double[] a, int[] b, double x) {
-            // The choice of algorithm in Boost is based on the compiler
-            // to suite the available optimisations.
-            //
-            // Tests against rational_horner1_13.hpp which uses a first order
-            // Horner method (no x*x term) show only minor variations in
-            // error. rational_horner2_13.hpp has the same second order Horner
-            // method with different code layout of the same sum.
 
-            // rational_horner3_13.hpp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        private static double evaluateRational(double[] a, int[] b, double x) {
+
+
+
+
+
+
+
+
+
             if (x <= 1) {
                 final double x2 = x * x;
                 double t0 = a[12] * x2 + a[10];
@@ -538,92 +538,92 @@ final class BoostGamma {
             return (t0 + t1) / (t2 + t3);
         }
 
-        // Not implemented:
-        // lanczos_sum_near_1
-        // lanczos_sum_near_2
+
+
+
     }
 
-    /** Private constructor. */
+
     private BoostGamma() {
-        // intentionally empty.
+
     }
 
-    /**
-     * All factorials that are representable as a double.
-     * This data is exposed for testing.
-     *
-     * @return factorials
-     */
+
+
+
+
+
+
     static double[] getFactorials() {
         return FACTORIAL.clone();
     }
 
-    /**
-     * Returns the factorial of n.
-     * This is unchecked as an index out of bound exception will occur
-     * if the value n is not within the range [0, 170].
-     * This function is exposed for use in {@link BoostBeta}.
-     *
-     * @param n Argument n (must be in [0, 170])
-     * @return n!
-     */
+
+
+
+
+
+
+
+
+
     static double uncheckedFactorial(int n) {
         return FACTORIAL[n];
     }
 
-    /**
-     * Gamma function.
-     *
-     * <p>For small {@code z} this is based on the <em>NSWC Library of Mathematics
-     * Subroutines</em> double precision implementation, {@code DGAMMA}.
-     *
-     * <p>For large {@code z} this is an implementation of the Boost C++ tgamma
-     * function with Lanczos support.
-     *
-     * <p>Integers are handled using a look-up table of factorials.
-     *
-     * <p>Note: The Boost C++ implementation uses the Lanczos sum for all {@code z}.
-     * When promotion of double to long double is not available this has larger
-     * errors than the double precision specific NSWC implementation. For larger
-     * {@code z} the Boost C++ Lanczos implementation incorporates the sqrt(2 pi)
-     * factor and has lower error than the implementation using the
-     * {@link LanczosApproximation} class.
-     *
-     * @param z Argument z
-     * @return gamma value
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static double tgamma(double z) {
-        // Handle integers
+
         if (Math.rint(z) == z) {
             if (z <= 0) {
-                // Pole error
+
                 return Double.NaN;
             }
             if (z <= MAX_GAMMA_Z) {
-                // Gamma(n) = (n-1)!
+
                 return FACTORIAL[(int) z - 1];
             }
-            // Overflow
+
             return Double.POSITIVE_INFINITY;
         }
 
         if (Math.abs(z) <= LANCZOS_THRESHOLD) {
-            // Small z
-            // NSWC Library of Mathematics Subroutines
-            // Note:
-            // This does not benefit from using extended precision to track the sum (t).
-            // Extended precision on the product reduces the error but the majority
-            // of error remains in InvGamma1pm1.
+
+
+
+
+
+
 
             if (z >= 1) {
-                /*
-                 * From the recurrence relation
-                 * Gamma(x) = (x - 1) * ... * (x - n) * Gamma(x - n),
-                 * then
-                 * Gamma(t) = 1 / [1 + InvGamma1pm1.value(t - 1)],
-                 * where t = x - n. This means that t must satisfy
-                 * -0.5 <= t - 1 <= 1.5.
-                 */
+
+
+
+
+
+
+
+
                 double prod = 1;
                 double t = z;
                 while (t > 2.5) {
@@ -632,13 +632,13 @@ final class BoostGamma {
                 }
                 return prod / (1 + InvGamma1pm1.value(t - 1));
             }
-            /*
-             * From the recurrence relation
-             * Gamma(x) = Gamma(x + n + 1) / [x * (x + 1) * ... * (x + n)]
-             * then
-             * Gamma(x + n + 1) = 1 / [1 + InvGamma1pm1.value(x + n)],
-             * which requires -0.5 <= x + n <= 1.5.
-             */
+
+
+
+
+
+
+
             double prod = z;
             double t = z;
             while (t < -0.5) {
@@ -648,21 +648,21 @@ final class BoostGamma {
             return 1 / (prod * (1 + InvGamma1pm1.value(t)));
         }
 
-        // Large non-integer z
-        // Boost C++ tgamma implementation
+
+
 
         if (z < 0) {
-            /*
-             * From the reflection formula
-             * Gamma(x) * Gamma(1 - x) * sin(pi * x) = pi,
-             * and the recurrence relation
-             * Gamma(1 - x) = -x * Gamma(-x),
-             * it is found
-             * Gamma(x) = -pi / [x * sin(pi * x) * Gamma(-x)].
-             */
+
+
+
+
+
+
+
+
             return -Math.PI / (sinpx(z) * tgamma(-z));
         } else if (z > MAX_GAMMA_Z + 1) {
-            // Addition to the Boost code: Simple overflow detection
+
             return Double.POSITIVE_INFINITY;
         }
 
@@ -670,17 +670,17 @@ final class BoostGamma {
         final double zgh = z + Lanczos.GMH;
         final double lzgh = Math.log(zgh);
         if (z * lzgh > LOG_MAX_VALUE) {
-            // we're going to overflow unless this is done with care:
 
-            // Updated
-            // Check for overflow removed:
-            // if (lzgh * z / 2 > LOG_MAX_VALUE) ... overflow
-            // This is replaced by checking z > MAX_FACTORIAL + 2
+
+
+
+
+
 
             final double hp = Math.pow(zgh, (z / 2) - 0.25);
             result *= hp / Math.exp(zgh);
-            // Check for overflow has been removed:
-            // if (Double.MAX_VALUE / hp < result) ... overflow
+
+
             result *= hp;
         } else {
             result *= Math.pow(zgh, z - 0.5) / Math.exp(zgh);
@@ -689,17 +689,17 @@ final class BoostGamma {
         return result;
     }
 
-    /**
-     * Ad hoc function calculates x * sin(pi * x), taking extra care near when x is
-     * near a whole number.
-     *
-     * @param x Value (assumed to be negative)
-     * @return x * sin(pi * x)
-     */
+
+
+
+
+
+
+
     static double sinpx(double x) {
         int sign = 1;
-        // This is always called with a negative
-        // if (x < 0)
+
+
         x = -x;
         double fl = Math.floor(x);
         double dist;
@@ -717,50 +717,50 @@ final class BoostGamma {
         return sign * x * result;
     }
 
-    /**
-     * Checks if the value is odd.
-     *
-     * @param v Value (assumed to be positive and an integer)
-     * @return true if odd
-     */
+
+
+
+
+
+
     private static boolean isOdd(double v) {
-        // Note:
-        // Any value larger than 2^53 should be even.
-        // If the input is positive then truncation of extreme doubles (>2^63)
-        // to the primitive long creates an odd value: 2^63-1.
-        // This is corrected by inverting the sign of v and the extreme is even: -2^63.
-        // This function is never called when the argument is this large
-        // as this is a pole error in tgamma so the effect is never observed.
-        // However the isOdd function is correct for all positive finite v.
+
+
+
+
+
+
+
+
         return (((long) -v) & 0x1) == 1;
     }
 
-    /**
-     * Log Gamma function.
-     * Defined as the natural logarithm of the absolute value of tgamma(z).
-     *
-     * @param z Argument z
-     * @return log gamma value
-     */
+
+
+
+
+
+
+
     static double lgamma(double z) {
         return lgamma(z, null);
     }
 
-    /**
-     * Log Gamma function.
-     * Defined as the natural logarithm of the absolute value of tgamma(z).
-     *
-     * @param z Argument z
-     * @param sign If a non-zero length array the first index is set on output to the sign of tgamma(z)
-     * @return log gamma value
-     */
+
+
+
+
+
+
+
+
     static double lgamma(double z, int[] sign) {
         double result;
         int sresult = 1;
         if (z <= -ROOT_EPSILON) {
-            // reflection formula:
+
             if (Math.rint(z) == z) {
-                // Pole error
+
                 return Double.NaN;
             }
 
@@ -772,12 +772,12 @@ final class BoostGamma {
                 sresult = -sresult;
             }
 
-            // This summation can have large magnitudes with opposite signs.
-            // Use an extended precision sum to reduce cancellation.
+
+
             result = Sum.of(-lgamma(z)).add(-Math.log(t)).add(LOG_PI).getAsDouble();
         } else if (z < ROOT_EPSILON) {
             if (z == 0) {
-                // Pole error
+
                 return Double.NaN;
             }
             if (4 * Math.abs(z) < EPSILON) {
@@ -790,19 +790,19 @@ final class BoostGamma {
             }
         } else if (z < 15) {
             result = lgammaSmall(z, z - 1, z - 2);
-        // The z > 3 condition is always true
-        //} else if (z > 3 && z < 100) {
+
+
         } else if (z < 100) {
-            // taking the log of tgamma reduces the error, no danger of overflow here:
+
             result = Math.log(tgamma(z));
         } else {
-            // regular evaluation:
+
             final double zgh = z + Lanczos.GMH;
             result = Math.log(zgh) - 1;
             result *= z - 0.5f;
-            //
-            // Only add on the lanczos sum part if we're going to need it:
-            //
+
+
+
             if (result * EPSILON < 20) {
                 result += Math.log(Lanczos.lanczosSumExpGScaled(z));
             }
@@ -814,64 +814,64 @@ final class BoostGamma {
         return result;
     }
 
-    /**
-     * Log Gamma function for small z.
-     *
-     * @param z Argument z
-     * @param zm1 {@code z - 1}
-     * @param zm2 {@code z - 2}
-     * @return log gamma value
-     */
-    private static double lgammaSmall(double z, double zm1, double zm2) {
-        // This version uses rational approximations for small
-        // values of z accurate enough for 64-bit mantissas
-        // (80-bit long doubles), works well for 53-bit doubles as well.
 
-        // Updated to use an extended precision sum
+
+
+
+
+
+
+
+    private static double lgammaSmall(double z, double zm1, double zm2) {
+
+
+
+
+
         final Sum result = Sum.create();
 
-        // Note:
-        // Removed z < EPSILON branch.
-        // The function is called
-        // from lgamma:
-        //   ROOT_EPSILON <= z < 15
-        // from tgamma1pm1:
-        //   1.5 <= z < 2
-        //   1 <= z < 3
+
+
+
+
+
+
+
+
 
         if ((zm1 == 0) || (zm2 == 0)) {
-            // nothing to do, result is zero....
+
             return 0;
         } else if (z > 2) {
-            //
-            // Begin by performing argument reduction until
-            // z is in [2,3):
-            //
+
+
+
+
             if (z >= 3) {
                 do {
                     z -= 1;
                     result.add(Math.log(z));
                 } while (z >= 3);
-                // Update zm2, we need it below:
+
                 zm2 = z - 2;
             }
 
-            //
-            // Use the following form:
-            //
-            // lgamma(z) = (z-2)(z+1)(Y + R(z-2))
-            //
-            // where R(z-2) is a rational approximation optimised for
-            // low absolute error - as long as its absolute error
-            // is small compared to the constant Y - then any rounding
-            // error in its computation will get wiped out.
-            //
-            // R(z-2) has the following properties:
-            //
-            // At double: Max error found:                    4.231e-18
-            // At long double: Max error found:               1.987e-21
-            // Maximum Deviation Found (approximation error): 5.900e-24
-            //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             double P;
             P = -0.324588649825948492091e-4;
             P = -0.541009869215204396339e-3 + P * zm2;
@@ -897,39 +897,39 @@ final class BoostGamma {
 
             result.addProduct(r, Y).addProduct(r, R);
         } else {
-            //
-            // If z is less than 1 use recurrence to shift to
-            // z in the interval [1,2]:
-            //
+
+
+
+
             if (z < 1) {
                 result.add(-Math.log(z));
                 zm2 = zm1;
                 zm1 = z;
                 z += 1;
             }
-            //
-            // Two approximations, one for z in [1,1.5] and
-            // one for z in [1.5,2]:
-            //
-            if (z <= 1.5) {
-                //
-                // Use the following form:
-                //
-                // lgamma(z) = (z-1)(z-2)(Y + R(z-1
-                //
-                // where R(z-1) is a rational approximation optimised for
-                // low absolute error - as long as its absolute error
-                // is small compared to the constant Y - then any rounding
-                // error in its computation will get wiped out.
-                //
-                // R(z-1) has the following properties:
-                //
-                // At double precision: Max error found:                1.230011e-17
-                // At 80-bit long double precision:   Max error found:  5.631355e-21
-                // Maximum Deviation Found:                             3.139e-021
-                // Expected Error Term:                                 3.139e-021
 
-                //
+
+
+
+            if (z <= 1.5) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 final float Y = 0.52815341949462890625f;
 
                 double P;
@@ -954,23 +954,23 @@ final class BoostGamma {
 
                 result.addProduct(prefix, Y).addProduct(prefix, r);
             } else {
-                //
-                // Use the following form:
-                //
-                // lgamma(z) = (2-z)(1-z)(Y + R(2-z
-                //
-                // where R(2-z) is a rational approximation optimised for
-                // low absolute error - as long as its absolute error
-                // is small compared to the constant Y - then any rounding
-                // error in its computation will get wiped out.
-                //
-                // R(2-z) has the following properties:
-                //
-                // At double precision, max error found:              1.797565e-17
-                // At 80-bit long double precision, max error found:  9.306419e-21
-                // Maximum Deviation Found:                           2.151e-021
-                // Expected Error Term:                               2.150e-021
-                //
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 final float Y = 0.452017307281494140625f;
 
                 final double mzm2 = -zm2;
@@ -998,32 +998,32 @@ final class BoostGamma {
         return result.getAsDouble();
     }
 
-    /**
-     * Calculates tgamma(1+dz)-1.
-     *
-     * @param dz Argument
-     * @return tgamma(1+dz)-1
-     */
+
+
+
+
+
+
     static double tgamma1pm1(double dz) {
-        //
-        // This helper calculates tgamma(1+dz)-1 without cancellation errors,
-        // used by the upper incomplete gamma with z < 1:
-        //
+
+
+
+
         final double result;
         if (dz < 0) {
             if (dz < -0.5) {
-                // Best method is simply to subtract 1 from tgamma:
+
                 result = tgamma(1 + dz) - 1;
             } else {
-                // Use expm1 on lgamma:
+
                 result = Math.expm1(-Math.log1p(dz) + lgammaSmall(dz + 2, dz + 1, dz));
             }
         } else {
             if (dz < 2) {
-                // Use expm1 on lgamma:
+
                 result = Math.expm1(lgammaSmall(dz + 1, dz, dz - 1));
             } else {
-                // Best method is simply to subtract 1 from tgamma:
+
                 result = tgamma(1 + dz) - 1;
             }
         }
@@ -1031,157 +1031,157 @@ final class BoostGamma {
         return result;
     }
 
-    /**
-     * Full upper incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @return upper gamma value
-     */
+
+
+
+
+
+
+
     static double tgamma(double a, double x) {
         return gammaIncompleteImp(a, x, false, true, Policy.getDefault());
     }
 
-    /**
-     * Full upper incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param policy Function evaluation policy
-     * @return upper gamma value
-     */
+
+
+
+
+
+
+
+
     static double tgamma(double a, double x, Policy policy) {
         return gammaIncompleteImp(a, x, false, true, policy);
     }
 
-    /**
-     * Full lower incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @return lower gamma value
-     */
+
+
+
+
+
+
+
     static double tgammaLower(double a, double x) {
         return gammaIncompleteImp(a, x, false, false, Policy.getDefault());
     }
 
-    /**
-     * Full lower incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param policy Function evaluation policy
-     * @return lower gamma value
-     */
+
+
+
+
+
+
+
+
     static double tgammaLower(double a, double x, Policy policy) {
         return gammaIncompleteImp(a, x, false, false, policy);
     }
 
-    /**
-     * Regularised upper incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @return q
-     */
+
+
+
+
+
+
+
     static double gammaQ(double a, double x) {
         return gammaIncompleteImp(a, x, true, true, Policy.getDefault());
     }
 
-    /**
-     * Regularised upper incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param policy Function evaluation policy
-     * @return q
-     */
+
+
+
+
+
+
+
+
     static double gammaQ(double a, double x, Policy policy) {
         return gammaIncompleteImp(a, x, true, true, policy);
     }
 
-    /**
-     * Regularised lower incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @return p
-     */
+
+
+
+
+
+
+
     static double gammaP(double a, double x) {
         return gammaIncompleteImp(a, x, true, false, Policy.getDefault());
     }
 
-    /**
-     * Regularised lower incomplete gamma.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param policy Function evaluation policy
-     * @return p
-     */
+
+
+
+
+
+
+
+
     static double gammaP(double a, double x, Policy policy) {
         return gammaIncompleteImp(a, x, true, false, policy);
     }
 
-    /**
-     * Derivative of the regularised lower incomplete gamma.
-     * <p>\( \frac{e^{-x} x^{a-1}}{\Gamma(a)} \)
-     *
-     * <p>Adapted from {@code boost::math::detail::gamma_p_derivative_imp}
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @return p derivative
-     */
+
+
+
+
+
+
+
+
+
+
     static double gammaPDerivative(double a, double x) {
-        //
-        // Usual error checks first:
-        //
+
+
+
         if (Double.isNaN(a) || Double.isNaN(x) || a <= 0 || x < 0) {
             return Double.NaN;
         }
-        //
-        // Now special cases:
-        //
+
+
+
         if (x == 0) {
             if (a > 1) {
                 return 0;
             }
             return (a == 1) ? 1 : Double.POSITIVE_INFINITY;
         }
-        //
-        // Normal case:
-        //
+
+
+
         double f1 = regularisedGammaPrefix(a, x);
         if (f1 == 0) {
-            // Underflow in calculation, use logs instead:
+
             f1 = a * Math.log(x) - x - lgamma(a) - Math.log(x);
             f1 = Math.exp(f1);
         } else {
-            // Will overflow when (x < 1) && (Double.MAX_VALUE * x < f1).
-            // There is no exception for this case so just return the result.
+
+
             f1 /= x;
         }
 
         return f1;
     }
 
-    /**
-     * Main incomplete gamma entry point, handles all four incomplete gammas.
-     * Adapted from {@code boost::math::detail::gamma_incomplete_imp}.
-     *
-     * <p>The Boost code has a pointer {@code p_derivative} that can be set to the
-     * value of the derivative. This is used for the inverse incomplete
-     * gamma functions {@code gamma_(p|q)_inv_imp}. It is not required for the forward
-     * evaluation functions.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param normalised true to compute the regularised value
-     * @param invert true to compute the upper value Q (default is lower value P)
-     * @param pol Function evaluation policy
-     * @return gamma value
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static double gammaIncompleteImp(double a, double x,
             boolean normalised, boolean invert, Policy pol) {
         if (Double.isNaN(a) || Double.isNaN(x) || a <= 0 || x < 0) {
@@ -1191,36 +1191,36 @@ final class BoostGamma {
         double result = 0;
 
         if (a >= MAX_FACTORIAL && !normalised) {
-            //
-            // When we're computing the non-normalized incomplete gamma
-            // and a is large the result is rather hard to compute unless
-            // we use logs. There are really two options - if x is a long
-            // way from a in value then we can reliably use methods 2 and 4
-            // below in logarithmic form and go straight to the result.
-            // Otherwise we let the regularized gamma take the strain
-            // (the result is unlikely to underflow in the central region anyway)
-            // and combine with lgamma in the hopes that we get a finite result.
-            //
+
+
+
+
+
+
+
+
+
+
 
             if (invert && (a * 4 < x)) {
-                // This is method 4 below, done in logs:
+
                 result = a * Math.log(x) - x;
                 result += Math.log(upperGammaFraction(a, x, pol));
             } else if (!invert && (a > 4 * x)) {
-                // This is method 2 below, done in logs:
+
                 result = a * Math.log(x) - x;
                 result += Math.log(lowerGammaSeries(a, x, 0, pol) / a);
             } else {
                 result = gammaIncompleteImp(a, x, true, invert, pol);
                 if (result == 0) {
                     if (invert) {
-                        // Try http://functions.wolfram.com/06.06.06.0039.01
+
                         result = 1 + 1 / (12 * a) + 1 / (288 * a * a);
                         result = Math.log(result) - a + (a - 0.5f) * Math.log(a) + LOG_ROOT_TWO_PI;
                     } else {
-                        // This is method 2 below, done in logs, we're really outside the
-                        // range of this method, but since the result is almost certainly
-                        // infinite, we should probably be OK:
+
+
+
                         result = a * Math.log(x) - x;
                         result += Math.log(lowerGammaSeries(a, x, 0, pol) / a);
                     }
@@ -1228,14 +1228,14 @@ final class BoostGamma {
                     result = Math.log(result) + lgamma(a);
                 }
             }
-            // If result is > log(MAX_VALUE) the result will overflow.
-            // There is no exception for this case so just return the result.
+
+
             return Math.exp(result);
         }
 
         final boolean isInt;
         final boolean isHalfInt;
-        // Update. x must be safe for exp(-x). Change to -x > LOG_MIN_VALUE.
+
         final boolean isSmallA = (a < 30) && (a <= x + 1) && (-x > LOG_MIN_VALUE);
         if (isSmallA) {
             final double fa = Math.floor(a);
@@ -1248,79 +1248,79 @@ final class BoostGamma {
         final int evalMethod;
 
         if (isInt && (x > 0.6)) {
-            // calculate Q via finite sum:
+
             invert = !invert;
             evalMethod = 0;
         } else if (isHalfInt && (x > 0.2)) {
-            // calculate Q via finite sum for half integer a:
+
             invert = !invert;
             evalMethod = 1;
         } else if ((x < ROOT_EPSILON) && (a > 1)) {
             evalMethod = 6;
         } else if ((x > 1000) && (a < x * 0.75f)) {
-            // Note:
-            // The branch is used in Boost when:
-            // ((x > 1000) && ((a < x) || (Math.abs(a - 50) / x < 1)))
-            //
-            // This case was added after Boost 1_68_0.
-            // See: https://github.com/boostorg/math/issues/168
-            //
-            // When using only double precision for the evaluation
-            // it is a source of error when a ~ z as the asymptotic approximation
-            // sums terms t_n+1 = t_n * (a - n - 1) / z starting from t_0 = 1.
-            // These terms are close to 1 when a ~ z and the sum has many terms
-            // with reduced precision.
-            // This has been updated to allow only cases with fast convergence.
-            // It will be used when x -> infinity and a << x.
 
-            // calculate Q via asymptotic approximation:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             invert = !invert;
             evalMethod = 7;
         } else if (x < 0.5) {
-            //
-            // Changeover criterion chosen to give a changeover at Q ~ 0.33
-            //
+
+
+
             if (-0.4 / Math.log(x) < a) {
-                // Compute P
+
                 evalMethod = 2;
             } else {
                 evalMethod = 3;
             }
         } else if (x < 1.1) {
-            //
-            // Changover here occurs when P ~ 0.75 or Q ~ 0.25:
-            //
+
+
+
             if (x * 0.75f < a) {
-                // Compute P
+
                 evalMethod = 2;
             } else {
                 evalMethod = 3;
             }
         } else {
-            //
-            // Begin by testing whether we're in the "bad" zone
-            // where the result will be near 0.5 and the usual
-            // series and continued fractions are slow to converge:
-            //
+
+
+
+
+
             boolean useTemme = false;
             if (normalised && (a > 20)) {
                 final double sigma = Math.abs((x - a) / a);
                 if (a > 200) {
-                    //
-                    // This limit is chosen so that we use Temme's expansion
-                    // only if the result would be larger than about 10^-6.
-                    // Below that the regular series and continued fractions
-                    // converge OK, and if we use Temme's method we get increasing
-                    // errors from the dominant erfc term as its (inexact) argument
-                    // increases in magnitude.
-                    //
+
+
+
+
+
+
+
+
                     if (20 / a > sigma * sigma) {
                         useTemme = true;
                     }
                 } else {
-                    // Note in this zone we can't use Temme's expansion for
-                    // types longer than an 80-bit real:
-                    // it would require too many terms in the polynomials.
+
+
+
                     if (sigma < 0.4) {
                         useTemme = true;
                     }
@@ -1329,14 +1329,14 @@ final class BoostGamma {
             if (useTemme) {
                 evalMethod = 5;
             } else {
-                //
-                // Regular case where the result will not be too close to 0.5.
-                //
-                // Changeover here occurs at P ~ Q ~ 0.5
-                // Note that series computation of P is about x2 faster than continued fraction
-                // calculation of Q, so try and use the CF only when really necessary,
-                // especially for small x.
-                //
+
+
+
+
+
+
+
+
                 if (x - (1 / (3 * x)) < a) {
                     evalMethod = 2;
                 } else {
@@ -1360,21 +1360,21 @@ final class BoostGamma {
             }
             break;
         case 2:
-            // Compute P:
+
             result = normalised ? regularisedGammaPrefix(a, x) : fullIgammaPrefix(a, x);
             if (result != 0) {
-                //
-                // If we're going to be inverting the result then we can
-                // reduce the number of series evaluations by quite
-                // a few iterations if we set an initial value for the
-                // series sum based on what we'll end up subtracting it from
-                // at the end.
-                // Have to be careful though that this optimization doesn't
-                // lead to spurious numeric overflow. Note that the
-                // scary/expensive overflow checks below are more often
-                // than not bypassed in practice for "sensible" input
-                // values:
-                //
+
+
+
+
+
+
+
+
+
+
+
+
 
                 double initValue = 0;
                 boolean optimisedInvert = false;
@@ -1400,17 +1400,17 @@ final class BoostGamma {
             }
             break;
         case 3:
-            // Compute Q:
+
             invert = !invert;
             final double[] g = {0};
             result = tgammaSmallUpperPart(a, x, pol, g, invert);
             invert = false;
             if (normalised) {
-                // Addition to the Boost code:
+
                 if (g[0] == Double.POSITIVE_INFINITY) {
-                    // Very small a will overflow gamma(a). Resort to logs.
-                    // This method requires improvement as the error is very large.
-                    // It is better than returning zero for a non-zero result.
+
+
+
                     result = Math.exp(Math.log(result) - lgamma(a));
                 } else {
                     result /= g[0];
@@ -1418,24 +1418,24 @@ final class BoostGamma {
             }
             break;
         case 4:
-            // Compute Q:
+
             result = normalised ? regularisedGammaPrefix(a, x) : fullIgammaPrefix(a, x);
             if (result != 0) {
                 result *= upperGammaFraction(a, x, pol);
             }
             break;
         case 5:
-            // Call 53-bit version
+
             result = igammaTemmeLarge(a, x);
             if (x >= a) {
                 invert = !invert;
             }
             break;
         case 6:
-            // x is so small that P is necessarily very small too, use
-            // http://functions.wolfram.com/GammaBetaErf/GammaRegularized/06/01/05/01/01/
+
+
             if (normalised) {
-                // If tgamma overflows then result = 0
+
                 result = Math.pow(x, a) / tgamma(a + 1);
             } else {
                 result = Math.pow(x, a) / a;
@@ -1444,8 +1444,8 @@ final class BoostGamma {
             break;
         case 7:
         default:
-            // x is large,
-            // Compute Q:
+
+
             result = normalised ? regularisedGammaPrefix(a, x) : fullIgammaPrefix(a, x);
             result /= x;
             if (result != 0) {
@@ -1465,41 +1465,41 @@ final class BoostGamma {
         return result;
     }
 
-    /**
-     * Upper gamma fraction.
-     * Multiply result by z^a * e^-z to get the full
-     * upper incomplete integral.  Divide by tgamma(z)
-     * to normalise.
-     *
-     * @param a Argument a
-     * @param z Argument z
-     * @param pol Function evaluation policy
-     * @return upper gamma fraction
-     */
-    // This is package-private for testing
+
+
+
+
+
+
+
+
+
+
+
+
     static double upperGammaFraction(double a, double z, Policy pol) {
         final double eps = pol.getEps();
         final int maxIterations = pol.getMaxIterations();
 
-        // This is computing:
-        //              1
-        // ------------------------------
-        // b0 + a1 / (b1 +     a2       )
-        //                 -------------
-        //                 b2 +    a3
-        //                      --------
-        //                      b3 + ...
-        //
-        // b0 = z - a + 1
-        // a1 = a - 1
-        //
-        // It can be done several ways with variations in accuracy.
-        // The current implementation has the best accuracy and matches the Boost code.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         final double zma1 = z - a + 1;
 
         final Supplier<Coefficient> gen = new Supplier<Coefficient>() {
-            /** Iteration. */
+
             private int k;
 
             @Override
@@ -1512,21 +1512,21 @@ final class BoostGamma {
         return 1 / GeneralizedContinuedFraction.value(zma1, gen, eps, maxIterations);
     }
 
-    /**
-     * Upper gamma fraction for integer a.
-     * Called when {@code a < 30} and {@code -x > LOG_MIN_VALUE}.
-     *
-     * @param a Argument a (assumed to be small)
-     * @param x Argument x
-     * @return upper gamma fraction
-     */
-    private static double finiteGammaQ(double a, double x) {
-        //
-        // Calculates normalised Q when a is an integer:
-        //
 
-        // Update:
-        // Assume -x > log min value and no underflow to zero.
+
+
+
+
+
+
+
+    private static double finiteGammaQ(double a, double x) {
+
+
+
+
+
+
 
         double sum = Math.exp(-x);
         double term = sum;
@@ -1538,22 +1538,22 @@ final class BoostGamma {
         return sum;
     }
 
-    /**
-     * Upper gamma fraction for half integer a.
-     * Called when {@code a < 30} and {@code -x > LOG_MIN_VALUE}.
-     *
-     * @param a Argument a (assumed to be small)
-     * @param x Argument x
-     * @return upper gamma fraction
-     */
-    private static double finiteHalfGammaQ(double a, double x) {
-        //
-        // Calculates normalised Q when a is a half-integer:
-        //
 
-        // Update:
-        // Assume -x > log min value:
-        // erfc(sqrt(708)) = erfc(26.6) => erfc has a non-zero value
+
+
+
+
+
+
+
+    private static double finiteHalfGammaQ(double a, double x) {
+
+
+
+
+
+
+
 
         double e = BoostErf.erfc(Math.sqrt(x));
         if (a > 1) {
@@ -1571,28 +1571,28 @@ final class BoostGamma {
         return e;
     }
 
-    /**
-     * Lower gamma series.
-     * Multiply result by ((z^a) * (e^-z) / a) to get the full
-     * lower incomplete integral. Then divide by tgamma(a)
-     * to get the normalised value.
-     *
-     * @param a Argument a
-     * @param z Argument z
-     * @param initValue Initial value
-     * @param pol Function evaluation policy
-     * @return lower gamma series
-     */
-    // This is package-private for testing
+
+
+
+
+
+
+
+
+
+
+
+
+
     static double lowerGammaSeries(double a, double z, double initValue, Policy pol) {
         final double eps = pol.getEps();
         final int maxIterations = pol.getMaxIterations();
 
-        // Lower gamma series representation.
+
         final DoubleSupplier gen = new DoubleSupplier() {
-            /** Next result. */
+
             private double result = 1;
-            /** Iteration. */
+
             private int n;
 
             @Override
@@ -1607,44 +1607,44 @@ final class BoostGamma {
         return BoostTools.kahanSumSeries(gen, eps, maxIterations, initValue);
     }
 
-    /**
-     * Upper gamma fraction for very small a.
-     *
-     * @param a Argument a (assumed to be small)
-     * @param x Argument x
-     * @param pol Function evaluation policy
-     * @param pgam set to value of gamma(a) on output
-     * @param invert true to invert the result
-     * @return upper gamma fraction
-     */
+
+
+
+
+
+
+
+
+
+
     private static double tgammaSmallUpperPart(double a, double x, Policy pol, double[] pgam, boolean invert) {
-        //
-        // Compute the full upper fraction (Q) when a is very small:
-        //
+
+
+
         double result;
         result = tgamma1pm1(a);
 
-        // Note: Replacing this with tgamma(a) does not reduce error on current test data.
 
-        // gamma(1+z) = z gamma(z)
-        // pgam[0] == gamma(a)
+
+
+
         pgam[0] = (result + 1) / a;
 
         double p = BoostMath.powm1(x, a);
         result -= p;
         result /= a;
-        // Removed subtraction of 10 from this value
+
         final int maxIter = pol.getMaxIterations();
         p += 1;
         final double initValue = invert ? pgam[0] : 0;
 
-        // Series representation for upper fraction when z is small.
+
         final DoubleSupplier gen = new DoubleSupplier() {
-            /** Result term. */
+
             private double result = -x;
-            /** Argument x (this is negated on purpose). */
+
             private final double z = -x;
-            /** Iteration. */
+
             private int n = 1;
 
             @Override
@@ -1663,14 +1663,14 @@ final class BoostGamma {
         return result;
     }
 
-    /**
-     * Calculate power term prefix (z^a)(e^-z) used in the non-normalised
-     * incomplete gammas.
-     *
-     * @param a Argument a
-     * @param z Argument z
-     * @return incomplete gamma prefix
-     */
+
+
+
+
+
+
+
+
     static double fullIgammaPrefix(double a, double z) {
         if (z > Double.MAX_VALUE) {
             return 0;
@@ -1690,68 +1690,68 @@ final class BoostGamma {
             if (alz > LOG_MIN_VALUE) {
                 prefix = Math.pow(z, a) * Math.exp(-z);
             } else {
-                // Updated to remove unreachable final branch using Math.exp(alz - z).
-                // This branch requires (z / a < LOG_MAX_VALUE) to avoid overflow in exp.
-                // At this point:
-                // 1. log(z) is negative;
-                // 2. a * log(z) <= -708 requires a > -708 / log(z).
-                // For any z < 1: -708 / log(z) is > z. Thus a is > z and
-                // z / a < LOG_MAX_VALUE is always true.
+
+
+
+
+
+
+
                 prefix = Math.pow(z / Math.exp(z / a), a);
             }
         }
-        // Removed overflow check. Return infinity if it occurs.
+
         return prefix;
     }
 
-    /**
-     * Compute (z^a)(e^-z)/tgamma(a).
-     * <p>Most of the error occurs in this function.
-     *
-     * @param a Argument a
-     * @param z Argument z
-     * @return regularized gamma prefix
-     */
-    // This is package-private for testing
+
+
+
+
+
+
+
+
+
     static double regularisedGammaPrefix(double a, double z) {
         if (z >= Double.MAX_VALUE) {
             return 0;
         }
 
-        // Update this condition from: a < 1
-        if (a <= 1) {
-            //
-            // We have to treat a < 1 as a special case because our Lanczos
-            // approximations are optimised against the factorials with a > 1,
-            // and for high precision types especially (128-bit reals for example)
-            // very small values of a can give rather erroneous results for gamma
-            // unless we do this:
-            //
-            // Boost todo: is this still required? Lanczos approx should be better now?
-            //
 
-            // Update this condition from: z <= LOG_MIN_VALUE
-            // Require exp(-z) to not underflow:
-            // -z > log(min_value)
+        if (a <= 1) {
+
+
+
+
+
+
+
+
+
+
+
+
+
             if (-z <= LOG_MIN_VALUE) {
-                // Oh dear, have to use logs, should be free of cancellation errors though:
+
                 return Math.exp(a * Math.log(z) - z - lgamma(a));
             }
-            // direct calculation, no danger of overflow as gamma(a) < 1/a
-            // for small a.
+
+
             return Math.pow(z, a) * Math.exp(-z) / tgamma(a);
         }
 
-        // Update to the Boost code.
-        // Use some of the logic from fullIgammaPrefix(a, z) to use the direct
-        // computation if it is valid. Assuming pow and exp are accurate to 1 ULP it
-        // puts most of the error in evaluation of tgamma(a). This is accurate
-        // enough that this reduces max error on the current test data.
-        //
-        // Overflow cases fall-through to the Lanczos approximation that incorporates
-        // the pow and exp terms used in the tgamma(a) computation with the terms
-        // z^a and e^-z into a single evaluation of pow and exp. See equation 15:
-        // https://www.boost.org/doc/libs/1_77_0/libs/math/doc/html/math_toolkit/sf_gamma/igamma.html
+
+
+
+
+
+
+
+
+
+
         if (a <= MAX_GAMMA_Z) {
             final double alz1 = a * Math.log(z);
             if (z >= 1) {
@@ -1763,49 +1763,49 @@ final class BoostGamma {
             }
         }
 
-        //
-        // For smallish a and x combining the power terms with the Lanczos approximation
-        // gives the greatest accuracy
-        //
+
+
+
+
 
         final double agh = a + Lanczos.GMH;
         double prefix;
 
         final double factor = Math.sqrt(agh / Math.E) / Lanczos.lanczosSumExpGScaled(a);
 
-        // Update to the Boost code.
-        // Lower threshold for large a from 150 to 128 and compute d on demand.
-        // See NUMBERS-179.
+
+
+
         if (a > 128) {
             final double d = ((z - a) - Lanczos.GMH) / agh;
             if (Math.abs(d * d * a) <= 100) {
-                // special case for large a and a ~ z.
-                // When a and x are large, we end up with a very large exponent with a base near one:
-                // this will not be computed accurately via the pow function, and taking logs simply
-                // leads to cancellation errors.
+
+
+
+
                 prefix = a * SpecialMath.log1pmx(d) + z * -Lanczos.GMH / agh;
                 prefix = Math.exp(prefix);
                 return prefix * factor;
             }
         }
 
-        //
-        // general case.
-        // direct computation is most accurate, but use various fallbacks
-        // for different parts of the problem domain:
-        //
+
+
+
+
+
 
         final double alz = a * Math.log(z / agh);
         final double amz = a - z;
         if ((Math.min(alz, amz) <= LOG_MIN_VALUE) || (Math.max(alz, amz) >= LOG_MAX_VALUE)) {
             final double amza = amz / a;
             if ((Math.min(alz, amz) / 2 > LOG_MIN_VALUE) && (Math.max(alz, amz) / 2 < LOG_MAX_VALUE)) {
-                // compute square root of the result and then square it:
+
                 final double sq = Math.pow(z / agh, a / 2) * Math.exp(amz / 2);
                 prefix = sq * sq;
             } else if ((Math.min(alz, amz) / 4 > LOG_MIN_VALUE) &&
                     (Math.max(alz, amz) / 4 < LOG_MAX_VALUE) && (z > a)) {
-                // compute the 4th root of the result then square it twice:
+
                 final double sq = Math.pow(z / agh, a / 4) * Math.exp(amz / 4);
                 prefix = sq * sq;
                 prefix *= prefix;
@@ -1821,56 +1821,56 @@ final class BoostGamma {
         return prefix;
     }
 
-    /**
-     * Implements the asymptotic expansions of the incomplete
-     * gamma functions P(a, x) and Q(a, x), used when a is large and
-     * x ~ a.
-     *
-     * <p>The primary reference is:
-     * <pre>
-     * "The Asymptotic Expansion of the Incomplete Gamma Functions"
-     * N. M. Temme.
-     * Siam J. Math Anal. Vol 10 No 4, July 1979, p757.
-     * </pre>
-     *
-     * <p>A different way of evaluating these expansions,
-     * plus a lot of very useful background information is in:
-     * <pre>
-     * "A Set of Algorithms For the Incomplete Gamma Functions."
-     * N. M. Temme.
-     * Probability in the Engineering and Informational Sciences,
-     * 8, 1994, 291.
-     * </pre>
-     *
-     * <p>An alternative implementation is in:
-     * <pre>
-     * "Computation of the Incomplete Gamma Function Ratios and their Inverse."
-     * A. R. Didonato and A. H. Morris.
-     * ACM TOMS, Vol 12, No 4, Dec 1986, p377.
-     * </pre>
-     *
-     * <p>This is a port of the function accurate for 53-bit mantissas
-     * (IEEE double precision or 10^-17). To understand the code, refer to Didonato
-     * and Morris, from Eq 17 and 18 onwards.
-     *
-     * <p>The coefficients used here are not taken from Didonato and Morris:
-     * the domain over which these expansions are used is slightly different
-     * to theirs, and their constants are not quite accurate enough for
-     * 128-bit long doubles.  Instead the coefficients were calculated
-     * using the methods described by Temme p762 from Eq 3.8 onwards.
-     * The values obtained agree with those obtained by Didonato and Morris
-     * (at least to the first 30 digits that they provide).
-     * At double precision the degrees of polynomial required for full
-     * machine precision are close to those recommended to Didonato and Morris,
-     * but of course many more terms are needed for larger types.
-     *
-     * <p>Adapted from {@code boost/math/special_functions/detail/igamma_large.hpp}.
-     *
-     * @param a the a
-     * @param x the x
-     * @return the double
-     */
-    // This is package-private for testing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static double igammaTemmeLarge(double a, double x) {
         final double sigma = (x - a) / a;
         final double phi = -SpecialMath.log1pmx(sigma);
@@ -1880,14 +1880,14 @@ final class BoostGamma {
             z = -z;
         }
 
-        // The following polynomials are evaluated with a loop
-        // with Horner's method. Variations exist using
-        // a second order Horner's method with an unrolled loop.
-        // These are chosen in Boost based on the C++ compiler.
-        // For example:
-        // boost/math/tools/detail/polynomial_horner1_15.hpp
-        // boost/math/tools/detail/polynomial_horner2_15.hpp
-        // boost/math/tools/detail/polynomial_horner3_15.hpp
+
+
+
+
+
+
+
+
 
         final double[] workspace = new double[10];
 
@@ -2018,27 +2018,27 @@ final class BoostGamma {
         return result;
     }
 
-    /**
-     * Incomplete tgamma for large X.
-     *
-     * <p>This summation is a source of error as the series starts at 1 and descends to zero.
-     * It can have thousands of iterations when a and z are large and close in value.
-     *
-     * @param a Argument a
-     * @param x Argument x
-     * @param pol Function evaluation policy
-     * @return incomplete tgamma
-     */
-    // This is package-private for testing
+
+
+
+
+
+
+
+
+
+
+
+
     static double incompleteTgammaLargeX(double a, double x, Policy pol) {
         final double eps = pol.getEps();
         final int maxIterations = pol.getMaxIterations();
 
-        // Asymptotic approximation for large argument, see: https://dlmf.nist.gov/8.11#E2.
+
         final DoubleSupplier gen = new DoubleSupplier() {
-            /** Result term. */
+
             private double term = 1;
-            /** Iteration. */
+
             private int n;
 
             @Override
@@ -2053,60 +2053,60 @@ final class BoostGamma {
         return BoostTools.kahanSumSeries(gen, eps, maxIterations);
     }
 
-    /**
-     * Return true if the array is not null and has non-zero length.
-     *
-     * @param array Array
-     * @return true if a non-zero length array
-     */
+
+
+
+
+
+
     private static boolean nonZeroLength(int[] array) {
         return array != null && array.length != 0;
     }
 
-    /**
-     * Ratio of gamma functions.
-     *
-     * <p>\[ tgamma_ratio(z, delta) = \frac{\Gamma(z)}{\Gamma(z + delta)} \]
-     *
-     * <p>Adapted from {@code tgamma_delta_ratio_imp}. The use of
-     * {@code max_factorial<double>::value == 170} has been replaced with
-     * {@code MAX_GAMMA_Z == 171}. This threshold is used when it is possible
-     * to call the gamma function without overflow.
-     *
-     * @param z Argument z
-     * @param delta The difference
-     * @return gamma ratio
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static double tgammaDeltaRatio(double z, double delta) {
         final double zDelta = z + delta;
         if (Double.isNaN(zDelta)) {
-            // One or both arguments are NaN
+
             return Double.NaN;
         }
         if (z <= 0 || zDelta <= 0) {
-            // This isn't very sophisticated, or accurate, but it does work:
+
             return tgamma(z) / tgamma(zDelta);
         }
 
-        // Note: Directly calling tgamma(z) / tgamma(z + delta) if possible
-        // without overflow is not more accurate
+
+
 
         if (Math.rint(delta) == delta) {
             if (delta == 0) {
                 return 1;
             }
-            //
-            // If both z and delta are integers, see if we can just use table lookup
-            // of the factorials to get the result:
-            //
+
+
+
+
             if (Math.rint(z) == z &&
                 z <= MAX_GAMMA_Z && zDelta <= MAX_GAMMA_Z) {
                 return FACTORIAL[(int) z - 1] / FACTORIAL[(int) zDelta - 1];
             }
             if (Math.abs(delta) < 20) {
-                //
-                // delta is a small integer, we can use a finite product:
-                //
+
+
+
                 if (delta < 0) {
                     z -= 1;
                     double result = z;
@@ -2127,31 +2127,31 @@ final class BoostGamma {
         return tgammaDeltaRatioImpLanczos(z, delta);
     }
 
-    /**
-     * Ratio of gamma functions using Lanczos support.
-     *
-     * <p>\[ tgamma_delta_ratio(z, delta) = \frac{\Gamma(z)}{\Gamma(z + delta)}
-     *
-     * <p>Adapted from {@code tgamma_delta_ratio_imp_lanczos}. The use of
-     * {@code max_factorial<double>::value == 170} has been replaced with
-     * {@code MAX_GAMMA_Z == 171}. This threshold is used when it is possible
-     * to use the precomputed factorial table.
-     *
-     * @param z Argument z
-     * @param delta The difference
-     * @return gamma ratio
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static double tgammaDeltaRatioImpLanczos(double z, double delta) {
         if (z < EPSILON) {
-            //
-            // We get spurious numeric overflow unless we're very careful, this
-            // can occur either inside Lanczos::lanczos_sum(z) or in the
-            // final combination of terms, to avoid this, split the product up
-            // into 2 (or 3) parts:
-            //
-            // G(z) / G(L) = 1 / (z * G(L)) ; z < eps, L = z + delta = delta
-            // z * G(L) = z * G(lim) * (G(L)/G(lim)) ; lim = largest factorial
-            //
+
+
+
+
+
+
+
+
+
             if (MAX_GAMMA_Z < delta) {
                 double ratio = tgammaDeltaRatioImpLanczos(delta, MAX_GAMMA_Z - delta);
                 ratio *= z;
@@ -2163,26 +2163,26 @@ final class BoostGamma {
         final double zgh = z + Lanczos.GMH;
         double result;
         if (z + delta == z) {
-            // Here:
-            // lanczosSum(z) / lanczosSum(z + delta) == 1
 
-            // Update to the Boost code to remove unreachable code:
-            // Given z + delta == z then |delta / z| < EPSILON; and z < zgh
-            // assume (abs(delta / zgh) < EPSILON) and remove unreachable
-            // else branch which sets result = 1
 
-            // We have:
-            // result = exp((0.5 - z) * log1p(delta / zgh));
-            // 0.5 - z == -z
-            // log1p(delta / zgh) = delta / zgh = delta / z
-            // multiplying we get -delta.
 
-            // Note:
-            // This can be different from
-            // exp((0.5 - z) * log1p(delta / zgh)) when z is small.
-            // In this case the result is exp(small) and the result
-            // is within 1 ULP of 1.0. This is left as the original
-            // Boost method using exp(-delta).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             result = Math.exp(-delta);
         } else {
@@ -2191,45 +2191,45 @@ final class BoostGamma {
             } else {
                 result = Math.pow(zgh / (zgh + delta), z - 0.5);
             }
-            // Split the calculation up to avoid spurious overflow:
+
             result *= Lanczos.lanczosSum(z) / Lanczos.lanczosSum(z + delta);
         }
         result *= Math.pow(Math.E / (zgh + delta), delta);
         return result;
     }
 
-    /**
-     * Ratio of gamma functions.
-     *
-     * <p>\[ tgamma_ratio(x, y) = \frac{\Gamma(x)}{\Gamma(y)}
-     *
-     * <p>Adapted from {@code tgamma_ratio_imp}. The use of
-     * {@code max_factorial<double>::value == 170} has been replaced with
-     * {@code MAX_GAMMA_Z == 171}. This threshold is used when it is possible
-     * to call the gamma function without overflow.
-     *
-     * @param x Argument x (must be positive finite)
-     * @param y Argument y (must be positive finite)
-     * @return gamma ratio (or nan)
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static double tgammaRatio(double x, double y) {
         if (x <= 0 || !Double.isFinite(x) || y <= 0 || !Double.isFinite(y)) {
             return Double.NaN;
         }
         if (x <= Double.MIN_NORMAL) {
-            // Special case for denorms...Ugh.
+
             return TWO_POW_53 * tgammaRatio(x * TWO_POW_53, y);
         }
 
         if (x <= MAX_GAMMA_Z && y <= MAX_GAMMA_Z) {
-            // Rather than subtracting values, lets just call the gamma functions directly:
+
             return tgamma(x) / tgamma(y);
         }
         double prefix = 1;
         if (x < 1) {
             if (y < 2 * MAX_GAMMA_Z) {
-                // We need to sidestep on x as well, otherwise we'll underflow
-                // before we get to factor in the prefix term:
+
+
                 prefix /= x;
                 x += 1;
                 while (y >= MAX_GAMMA_Z) {
@@ -2238,15 +2238,15 @@ final class BoostGamma {
                 }
                 return prefix * tgamma(x) / tgamma(y);
             }
-            //
-            // result is almost certainly going to underflow to zero, try logs just in case:
-            //
+
+
+
             return Math.exp(lgamma(x) - lgamma(y));
         }
         if (y < 1) {
             if (x < 2 * MAX_GAMMA_Z) {
-                // We need to sidestep on y as well, otherwise we'll overflow
-                // before we get to factor in the prefix term:
+
+
                 prefix *= y;
                 y += 1;
                 while (x >= MAX_GAMMA_Z) {
@@ -2255,14 +2255,14 @@ final class BoostGamma {
                 }
                 return prefix * tgamma(x) / tgamma(y);
             }
-            //
-            // Result will almost certainly overflow, try logs just in case:
-            //
+
+
+
             return Math.exp(lgamma(x) - lgamma(y));
         }
-        //
-        // Regular case, x and y both large and similar in magnitude:
-        //
+
+
+
         return tgammaDeltaRatio(x, y - x);
     }
 }

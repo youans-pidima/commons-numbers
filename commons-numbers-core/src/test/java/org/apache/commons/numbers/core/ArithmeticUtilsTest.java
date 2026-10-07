@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.core;
 
 import java.util.Arrays;
@@ -25,12 +25,12 @@ import org.apache.commons.rng.simple.RandomSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Test cases for the {@link ArithmeticUtils} class.
- *
- */
+
+
+
+
 class ArithmeticUtilsTest {
-    /** 2^63. */
+
     private static final BigInteger TWO_POW_63 = BigInteger.ONE.shiftLeft(63);
 
     @Test
@@ -62,25 +62,25 @@ class ArithmeticUtilsTest {
         Assertions.assertEquals(Integer.MAX_VALUE, ArithmeticUtils.gcd(-Integer.MAX_VALUE, 0));
         Assertions.assertEquals(1 << 30, ArithmeticUtils.gcd(1 << 30, -Integer.MIN_VALUE));
         try {
-            // gcd(Integer.MIN_VALUE, 0) > Integer.MAX_VALUE
+
             ArithmeticUtils.gcd(Integer.MIN_VALUE, 0);
             Assertions.fail("expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
         try {
-            // gcd(0, Integer.MIN_VALUE) > Integer.MAX_VALUE
+
             ArithmeticUtils.gcd(0, Integer.MIN_VALUE);
             Assertions.fail("expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
         try {
-            // gcd(Integer.MIN_VALUE, Integer.MIN_VALUE) > Integer.MAX_VALUE
+
             ArithmeticUtils.gcd(Integer.MIN_VALUE, Integer.MIN_VALUE);
             Assertions.fail("expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
     }
 
@@ -136,25 +136,25 @@ class ArithmeticUtilsTest {
         Assertions.assertEquals(Long.MAX_VALUE, ArithmeticUtils.gcd(-Long.MAX_VALUE, 0L));
         Assertions.assertEquals(1, ArithmeticUtils.gcd(60247241209L, 153092023L));
         try {
-            // gcd(Long.MIN_VALUE, 0) > Long.MAX_VALUE
+
             ArithmeticUtils.gcd(Long.MIN_VALUE, 0);
             Assertions.fail("expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
         try {
-            // gcd(0, Long.MIN_VALUE) > Long.MAX_VALUE
+
             ArithmeticUtils.gcd(0, Long.MIN_VALUE);
             Assertions.fail("expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
         try {
-            // gcd(Long.MIN_VALUE, Long.MIN_VALUE) > Long.MAX_VALUE
+
             ArithmeticUtils.gcd(Long.MIN_VALUE, Long.MIN_VALUE);
             Assertions.fail("expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
     }
 
@@ -174,34 +174,34 @@ class ArithmeticUtilsTest {
         Assertions.assertEquals(150, ArithmeticUtils.lcm(-a, -b));
         Assertions.assertEquals(2310, ArithmeticUtils.lcm(a, c));
 
-        // Assert that no intermediate value overflows:
-        // The naive implementation of lcm(a,b) would be (a*b)/gcd(a,b)
+
+
         Assertions.assertEquals((1 << 20) * 15, ArithmeticUtils.lcm((1 << 20) * 3, (1 << 20) * 5));
 
-        // Special case
+
         Assertions.assertEquals(0, ArithmeticUtils.lcm(0, 0));
 
         try {
-            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int
+
             ArithmeticUtils.lcm(Integer.MIN_VALUE, 1);
             Assertions.fail("Expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
 
         try {
-            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int
+
             ArithmeticUtils.lcm(Integer.MIN_VALUE, 1 << 20);
             Assertions.fail("Expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
 
         try {
             ArithmeticUtils.lcm(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
             Assertions.fail("Expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
     }
 
@@ -223,27 +223,27 @@ class ArithmeticUtilsTest {
 
         Assertions.assertEquals(Long.MAX_VALUE, ArithmeticUtils.lcm(60247241209L, 153092023L));
 
-        // Assert that no intermediate value overflows:
-        // The naive implementation of lcm(a,b) would be (a*b)/gcd(a,b)
+
+
         Assertions.assertEquals((1L << 50) * 15, ArithmeticUtils.lcm((1L << 45) * 3, (1L << 50) * 5));
 
-        // Special case
+
         Assertions.assertEquals(0L, ArithmeticUtils.lcm(0L, 0L));
 
         try {
-            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int
+
             ArithmeticUtils.lcm(Long.MIN_VALUE, 1);
             Assertions.fail("Expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
 
         try {
-            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int
+
             ArithmeticUtils.lcm(Long.MIN_VALUE, 1 << 20);
             Assertions.fail("Expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
 
         Assertions.assertEquals((long) Integer.MAX_VALUE * (Integer.MAX_VALUE - 1),
@@ -252,7 +252,7 @@ class ArithmeticUtilsTest {
             ArithmeticUtils.lcm(Long.MAX_VALUE, Long.MAX_VALUE - 1);
             Assertions.fail("Expecting ArithmeticException");
         } catch (ArithmeticException expected) {
-            // expected
+
         }
     }
 
@@ -265,7 +265,7 @@ class ArithmeticUtilsTest {
             ArithmeticUtils.pow(21, -7);
             Assertions.fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            // expected behavior
+
         }
 
         Assertions.assertEquals(1801088541, ArithmeticUtils.pow(21, 7));
@@ -274,7 +274,7 @@ class ArithmeticUtilsTest {
             ArithmeticUtils.pow(21, -7);
             Assertions.fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            // expected behavior
+
         }
 
         Assertions.assertEquals(1801088541L, ArithmeticUtils.pow(21L, 7));
@@ -283,7 +283,7 @@ class ArithmeticUtilsTest {
             ArithmeticUtils.pow(21L, -7);
             Assertions.fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            // expected behavior
+
         }
 
         BigInteger twentyOne = BigInteger.valueOf(21L);
@@ -293,7 +293,7 @@ class ArithmeticUtilsTest {
             ArithmeticUtils.pow(twentyOne, -7);
             Assertions.fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            // expected behavior
+
         }
 
         Assertions.assertEquals(BigInteger.valueOf(1801088541L), ArithmeticUtils.pow(twentyOne, 7L));
@@ -302,7 +302,7 @@ class ArithmeticUtilsTest {
             ArithmeticUtils.pow(twentyOne, -7L);
             Assertions.fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            // expected behavior
+
         }
 
         Assertions.assertEquals(BigInteger.valueOf(1801088541L), ArithmeticUtils.pow(twentyOne, BigInteger.valueOf(7L)));
@@ -447,7 +447,7 @@ class ArithmeticUtilsTest {
         Assertions.assertFalse(ArithmeticUtils.isPowerOfTwo(-1));
         Assertions.assertFalse(ArithmeticUtils.isPowerOfTwo(Integer.MIN_VALUE));
 
-        // Small numbers in [0, 1024]
+
         final int n = 1025;
         final boolean[] expected = new boolean[n];
         Arrays.fill(expected, false);
@@ -460,7 +460,7 @@ class ArithmeticUtilsTest {
             Assertions.assertEquals(expected[i], actual, () -> Integer.toString(value));
         }
 
-        // All powers up to 2^62
+
         for (int i = 0; i <= 62; i++) {
             final long value = 1L << i;
             Assertions.assertTrue(ArithmeticUtils.isPowerOfTwo(value), () -> Long.toString(value));
@@ -471,15 +471,15 @@ class ArithmeticUtilsTest {
         }
     }
 
-    /**
-     * Testing helper method.
-     * @return an array of int numbers containing corner cases:<ul>
-     * <li>values near the beginning of int range,</li>
-     * <li>values near the end of int range,</li>
-     * <li>values near zero</li>
-     * <li>and some randomly distributed values.</li>
-     * </ul>
-     */
+
+
+
+
+
+
+
+
+
     private static int[] getIntSpecialCases() {
         int[] ints = new int[100];
         int i = 0;
@@ -502,17 +502,17 @@ class ArithmeticUtilsTest {
         return ints;
     }
 
-    /**
-     * Testing helper method.
-     * @return an array of long numbers containing corner cases:<ul>
-     * <li>values near the beginning of long range,</li>
-     * <li>values near the end of long range,</li>
-     * <li>values near the beginning of int range,</li>
-     * <li>values near the end of int range,</li>
-     * <li>values near zero</li>
-     * <li>and some randomly distributed values.</li>
-     * </ul>
-     */
+
+
+
+
+
+
+
+
+
+
+
     private static long[] getLongSpecialCases() {
         long[] longs = new long[100];
         int i = 0;
@@ -602,7 +602,7 @@ class ArithmeticUtilsTest {
                         ArithmeticUtils.remainderUnsigned(dividend, divisor);
                         Assertions.fail("Should have failed with ArithmeticException: division by zero");
                     } catch (ArithmeticException e) {
-                        // Success.
+
                     }
                 } else {
                     Assertions.assertEquals(remainderUnsignedExpected(dividend, divisor), ArithmeticUtils.remainderUnsigned(dividend, divisor),

@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.examples.jmh.arrays;
 
@@ -28,9 +28,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link PivotingStrategy}.
- */
+
+
+
 class PivotingStrategyTest {
     @ParameterizedTest
     @MethodSource(value = {"testPivot"})
@@ -47,7 +47,7 @@ class PivotingStrategyTest {
     @ParameterizedTest
     @MethodSource(value = {"testPivot"})
     void testMedianOf9(double[] a) {
-        // Sometimes this is off by an index of 1
+
         assertPivot(a, 0, PivotingStrategy.MEDIAN_OF_9, -1, 1);
     }
 
@@ -86,34 +86,34 @@ class PivotingStrategyTest {
     private static void assertPivot(double[] a, int target, PivotingStrategy s, int... offset) {
         final double[] copy = a.clone();
         final int[] k = s.getSampledIndices(0, a.length - 1, target);
-        // Extract data
+
         final double[] x = new double[k.length];
         for (int i = 0; i < k.length; i++) {
             x[i] = a[k[i]];
         }
         final int p1 = s.pivotIndex(a, 0, a.length - 1, target);
-        // Extract data after
+
         final double[] y = new double[k.length];
         for (int i = 0; i < k.length; i++) {
             y[i] = a[k[i]];
         }
-        // Test the effect on the data
+
         final int effect = s.samplingEffect();
         if (effect == PivotingStrategy.SORT) {
             Arrays.sort(x);
             Assertions.assertArrayEquals(x, y, "Data at indices not sorted");
         } else if (effect == PivotingStrategy.UNCHANGED) {
             Assertions.assertArrayEquals(x, y, "Data at indices changed");
-            // Sort the data to obtain the expected pivot
+
             Arrays.sort(x);
         } else if (effect == PivotingStrategy.PARTIAL_SORT) {
             Arrays.sort(x);
             Arrays.sort(y);
             Assertions.assertArrayEquals(x, y, "Data destroyed");
         }
-        // Pivot should be the centre of the sorted sample
+
         final int m = k.length >>> 1;
-        // Allowed to be offset
+
         if (offset.length != 0) {
             boolean ok = x[m] == a[p1];
             for (final int o : offset) {
@@ -126,7 +126,7 @@ class PivotingStrategyTest {
         } else {
             Assertions.assertEquals(x[m], a[p1], () -> "Unexpected pivot: " + p1);
         }
-        // Flip data, pivot value should be the same
+
         for (int i = 0, j = k.length - 1; i < j; i++, j--) {
             final double v = copy[k[i]];
             copy[k[i]] = copy[k[j]];
@@ -161,7 +161,7 @@ class PivotingStrategyTest {
     static Stream<double[]> testPivot() {
         final Stream.Builder<double[]> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Big enough to use median of 9
+
         final double[] a = rng.doubles(50).toArray();
         for (int i = 0; i < 10; i++) {
             ArraySampler.shuffle(rng, a);
@@ -173,7 +173,7 @@ class PivotingStrategyTest {
     static Stream<Arguments> testMedianOf5() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final double[] a = new double[5];
-        // Permutations is 5! = 120
+
         final int shift = 42;
         for (int i = 0; i < 5; i++) {
             a[0] = i + shift;

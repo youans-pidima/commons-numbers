@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.examples.jmh.arrays;
 
@@ -31,9 +31,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link KthSelector}.
- */
+
+
+
 class KthSelectorTest {
     @ParameterizedTest
     @MethodSource
@@ -42,7 +42,7 @@ class KthSelectorTest {
         Arrays.sort(sorted, from, to);
         KthSelector.partitionMin(values, from, to);
         Assertions.assertEquals(sorted[from], values[from]);
-        // Check the data is the same
+
         Arrays.sort(values, from, to);
         Assertions.assertArrayEquals(sorted, values, "Data destroyed");
     }
@@ -66,7 +66,7 @@ class KthSelectorTest {
         Arrays.sort(sorted, from, to);
         KthSelector.partitionMax(values, from, to);
         Assertions.assertEquals(sorted[to - 1], values[to - 1]);
-        // Check the data is the same
+
         Arrays.sort(values, from, to);
         Assertions.assertArrayEquals(sorted, values, "Data destroyed");
     }
@@ -158,7 +158,7 @@ class KthSelectorTest {
     static Stream<double[]> testSelect() {
         final Stream.Builder<double[]> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create();
-        // Sizes above and below the threshold for partitioning
+
         for (final int size : new int[] {5, 50}) {
             final double[] values = IntStream.range(0, size).asDoubleStream().toArray();
             final double[] zeros = values.clone();
@@ -224,7 +224,7 @@ class KthSelectorTest {
         for (final int k : indices) {
             Assertions.assertEquals(sorted[k], data[k], () -> "k[" + k + "]");
         }
-        // Check partial ordering
+
         Arrays.sort(indices);
         int i = 0;
         for (final int k : indices) {
@@ -251,7 +251,7 @@ class KthSelectorTest {
     static Stream<Arguments> testPartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning
+
         for (final int size : new int[] {5, 50}) {
             final double[] values = IntStream.range(0, size).asDoubleStream().toArray();
             final double[] zeros = values.clone();
@@ -259,7 +259,7 @@ class KthSelectorTest {
             Arrays.fill(zeros, size >>> 2, size >>> 1, 0.0);
             for (final int k : new int[] {1, 2, 3, size}) {
                 for (int i = 0; i < 25; i++) {
-                    // Note: Duplicate indices do not matter
+
                     final int[] indices = rng.ints(k, 0, size).toArray();
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
@@ -269,7 +269,7 @@ class KthSelectorTest {
                         indices));
                 }
             }
-            // min; max; min/max
+
             builder.add(Arguments.of(values.clone(), new int[] {0}));
             builder.add(Arguments.of(values.clone(), new int[] {size - 1}));
             builder.add(Arguments.of(values.clone(), new int[] {0, size - 1}));
@@ -313,7 +313,7 @@ class KthSelectorTest {
     @ParameterizedTest
     @MethodSource(value = {"testSort"})
     void testSortDP5(double[] values) {
-        // Requires at least 5 points
+
         assertSort(values, new KthSelector(PivotingStrategy.DYNAMIC, 5)::sortDP5);
     }
 
@@ -367,7 +367,7 @@ class KthSelectorTest {
     static Stream<double[]> testSort() {
         final Stream.Builder<double[]> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning
+
         for (final int size : new int[] {5, 50}) {
             double[] a = new double[size];
             Arrays.fill(a, 1.23);

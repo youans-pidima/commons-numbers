@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.core;
 
 import java.util.Arrays;
@@ -23,15 +23,15 @@ import java.math.RoundingMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Test cases for the {@link Precision} class.
- *
- */
+
+
+
+
 class PrecisionTest {
 
-    // Interfaces to allow testing variants with the same conditions.
-    // All methods that should be tested using these interfaces as the
-    // symmetry is asserted.
+
+
+
 
     @FunctionalInterface
     private interface Equals {
@@ -101,14 +101,14 @@ class PrecisionTest {
 
     @FunctionalInterface
     private interface CompareFunction {
-        /**
-         * Compare two values.
-         *
-         * @param a First value
-         * @param b Second value
-         * @return 0 if the value are considered equal, -1 if the first is smaller than
-         * the second, 1 if the first is larger than the second.
-         */
+
+
+
+
+
+
+
+
         int compare(double a, double b);
     }
 
@@ -215,7 +215,7 @@ class PrecisionTest {
 
     @Test
     void testEqualsWithImplicitAllowedUlpsOf1() {
-        // Use the version without the ulp argument
+
         assertEqualsWithAllowedUlps((a, b, ulp) -> Precision.equals(a, b), false, true);
     }
 
@@ -239,7 +239,7 @@ class PrecisionTest {
             Assertions.assertFalse(fun.equals(value, Math.nextUp(Math.nextUp(value)), 1));
             Assertions.assertTrue(fun.equals(value, Math.nextDown(value), 1));
             Assertions.assertFalse(fun.equals(value, Math.nextDown(Math.nextDown(value)), 1));
-            // This test is conditional
+
             if (!fixed1Ulp) {
                 Assertions.assertFalse(fun.equals(value, value, -1), "Negative ULP should be supported");
                 Assertions.assertFalse(fun.equals(value, Math.nextUp(value), 0));
@@ -261,8 +261,8 @@ class PrecisionTest {
         Assertions.assertFalse(fun.equals(Double.NaN, Double.POSITIVE_INFINITY, 0));
         Assertions.assertFalse(fun.equals(Double.NaN, Double.NEGATIVE_INFINITY, 0));
 
-        // Create a NaN representation 1 ulp above infinity.
-        // This hits not equal coverage for binary representations within the ulp but using NaN.
+
+
         final double nan = Double.longBitsToDouble(Double.doubleToRawLongBits(Double.POSITIVE_INFINITY) + 1);
         Assertions.assertFalse(fun.equals(nan, Double.POSITIVE_INFINITY, 1));
         Assertions.assertFalse(fun.equals(Double.POSITIVE_INFINITY, nan, 1));
@@ -270,13 +270,13 @@ class PrecisionTest {
         if (!fixed1Ulp) {
             Assertions.assertFalse(fun.equals(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Integer.MAX_VALUE));
             Assertions.assertFalse(fun.equals(0, Double.MAX_VALUE, Integer.MAX_VALUE));
-            // Here: f == 5.304989477E-315;
-            // it is used to test the maximum ULP distance between two opposite sign numbers.
+
+
             final double f = Double.longBitsToDouble(1L << 30);
             Assertions.assertFalse(fun.equals(-f, f, Integer.MAX_VALUE));
             Assertions.assertTrue(fun.equals(-f, Math.nextDown(f), Integer.MAX_VALUE));
             Assertions.assertTrue(fun.equals(Math.nextUp(-f), f, Integer.MAX_VALUE));
-            // Maximum distance between same sign numbers.
+
             final double f2 = Double.longBitsToDouble((1L << 30) + Integer.MAX_VALUE);
             Assertions.assertTrue(fun.equals(f, f2, Integer.MAX_VALUE));
             Assertions.assertFalse(fun.equals(f, Math.nextUp(f2), Integer.MAX_VALUE));
@@ -284,8 +284,8 @@ class PrecisionTest {
         }
     }
 
-    // Tests for floating point equality match the above tests with arguments
-    // converted to float
+
+
 
     @Test
     void testFloatEqualsIncludingNaN() {
@@ -339,7 +339,7 @@ class PrecisionTest {
 
     @Test
     void testFloatEqualsWithImplicitAllowedUlpsOf1() {
-        // Use the version without the ulp argument
+
         assertFloatEqualsWithAllowedUlps((a, b, ulp) -> Precision.equals(a, b), false, true);
     }
 
@@ -363,7 +363,7 @@ class PrecisionTest {
             Assertions.assertFalse(fun.equals(value, Math.nextUp(Math.nextUp(value)), 1));
             Assertions.assertTrue(fun.equals(value, Math.nextDown(value), 1));
             Assertions.assertFalse(fun.equals(value, Math.nextDown(Math.nextDown(value)), 1));
-            // This test is conditional
+
             if (!fixed1Ulp) {
                 Assertions.assertFalse(fun.equals(value, value, -1), "Negative ULP should be supported");
                 Assertions.assertFalse(fun.equals(value, Math.nextUp(value), 0));
@@ -387,17 +387,17 @@ class PrecisionTest {
 
         if (!fixed1Ulp) {
             Assertions.assertFalse(fun.equals(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Integer.MAX_VALUE));
-            // The 31-bit integer specification of the max positive ULP allows an extremely
-            // large range of a 23-bit mantissa and 8-bit exponent
+
+
             Assertions.assertTrue(fun.equals(0, Float.MAX_VALUE, Integer.MAX_VALUE));
-            // Here: f == 2;
-            // it is used to test the maximum ULP distance between two opposite sign numbers.
+
+
             final float f = Float.intBitsToFloat(1 << 30);
             Assertions.assertFalse(fun.equals(-f, f, Integer.MAX_VALUE));
             Assertions.assertTrue(fun.equals(-f, Math.nextDown(f), Integer.MAX_VALUE));
             Assertions.assertTrue(fun.equals(Math.nextUp(-f), f, Integer.MAX_VALUE));
-            // Maximum distance between same sign finite numbers is not possible as the upper
-            // limit is NaN. Check that it is not equal to anything.
+
+
             final float f2 = Float.intBitsToFloat(Integer.MAX_VALUE);
             Assertions.assertEquals(Double.NaN, f2);
             Assertions.assertFalse(fun.equals(f2, Float.MAX_VALUE, Integer.MAX_VALUE));
@@ -432,16 +432,16 @@ class PrecisionTest {
         assertSortWithCompareTo((a, b) -> fun.compareTo(a, b, ulps), v1, v2, 0.75, 2.23);
     }
 
-    /**
-     * Assert sorting with the provided compare function.
-     *
-     * <p>The test makes assumptions on the input data using the compare function:
-     * <pre>
-     * v1 == v2; (v1,v2) < v3 < v4
-     * </pre>
-     *
-     * <p>The data will be supplemented with NaN and infinite values to ensure sorting is correct.
-     */
+
+
+
+
+
+
+
+
+
+
     private static void assertSortWithCompareTo(CompareFunction compare,
                                                 double v1, double v2, double v3, double v4) {
         Assertions.assertEquals(0, compare.compare(v1, v2));
@@ -456,7 +456,7 @@ class PrecisionTest {
             for (int j = 0; j < array.length - 1; j++) {
                 final int c = compare.compare(array[j],
                                             array[j + 1]);
-                // Check that order is consistent with the comparison function.
+
                 Assertions.assertNotEquals(1, c);
             }
             Assertions.assertEquals(Double.NEGATIVE_INFINITY, array[0]);
@@ -505,7 +505,7 @@ class PrecisionTest {
         Assertions.assertEquals(+0, fun.compareTo(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 1));
         Assertions.assertEquals(-1, fun.compareTo(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 0));
 
-        // NaN should be after all non-NaN numbers
+
         Assertions.assertEquals(+1, fun.compareTo(Double.NaN, Double.MAX_VALUE, Integer.MAX_VALUE));
         Assertions.assertEquals(+1, fun.compareTo(Double.NaN, Double.POSITIVE_INFINITY, Integer.MAX_VALUE));
         Assertions.assertEquals(+1, fun.compareTo(Double.NaN, 42, Integer.MAX_VALUE));
@@ -519,14 +519,14 @@ class PrecisionTest {
         Assertions.assertEquals(1.235, Precision.round(x, 3));
         Assertions.assertEquals(1.2346, Precision.round(x, 4));
 
-        // JIRA MATH-151
+
         Assertions.assertEquals(39.25, Precision.round(39.245, 2));
         Assertions.assertEquals(39.24, Precision.round(39.245, 2, RoundingMode.DOWN));
         double xx = 39.0;
         xx += 245d / 1000d;
         Assertions.assertEquals(39.25, Precision.round(xx, 2));
 
-        // BZ 35904
+
         Assertions.assertEquals(30.1d, Precision.round(30.095d, 2));
         Assertions.assertEquals(30.1d, Precision.round(30.095d, 1));
         Assertions.assertEquals(33.1d, Precision.round(33.095d, 1));
@@ -594,7 +594,7 @@ class PrecisionTest {
             Precision.round(1.234, 2, RoundingMode.UNNECESSARY);
             Assertions.fail();
         } catch (ArithmeticException ex) {
-            // expected
+
         }
 
         Assertions.assertEquals(1.24, Precision.round(x, 2, RoundingMode.UP));
@@ -604,15 +604,15 @@ class PrecisionTest {
         Assertions.assertEquals(-1.235, Precision.round(-x, 3, RoundingMode.UP));
         Assertions.assertEquals(-1.2346, Precision.round(-x, 4, RoundingMode.UP));
 
-        // MATH-151
+
         Assertions.assertEquals(39.25, Precision.round(39.245, 2, RoundingMode.HALF_UP));
 
-        // special values
+
         Assertions.assertEquals(Double.NaN, Precision.round(Double.NaN, 2));
         Assertions.assertEquals(0.0, Precision.round(0.0, 2));
         Assertions.assertEquals(Double.POSITIVE_INFINITY, Precision.round(Double.POSITIVE_INFINITY, 2));
         Assertions.assertEquals(Double.NEGATIVE_INFINITY, Precision.round(Double.NEGATIVE_INFINITY, 2));
-        // comparison of positive and negative zero is not possible -> always equal thus do string comparison
+
         Assertions.assertEquals("-0.0", Double.toString(Precision.round(-0.0, 0)));
         Assertions.assertEquals("-0.0", Double.toString(Precision.round(-1e-10, 0)));
     }
@@ -647,15 +647,15 @@ class PrecisionTest {
         final double b = Math.nextUp(a);
 
         double diff = Math.abs(a - b);
-        // Because they are adjacent floating point numbers, "a" and "b" are
-        // considered equal even though the allowed error is smaller than
-        // their difference.
+
+
+
         Assertions.assertTrue(fun.equals(a, b, 0.5 * diff));
 
         final double c = Math.nextUp(b);
         diff = Math.abs(a - c);
-        // Because "a" and "c" are not adjacent, the tolerance is taken into
-        // account for assessing equality.
+
+
         Assertions.assertTrue(fun.equals(a, c, diff));
         Assertions.assertFalse(fun.equals(a, c, Math.nextDown(1.0) * diff));
     }
@@ -668,15 +668,15 @@ class PrecisionTest {
         final float b = Math.nextUp(a);
 
         float diff = Math.abs(a - b);
-        // Because they are adjacent floating point numbers, "a" and "b" are
-        // considered equal even though the allowed error is smaller than
-        // their difference.
+
+
+
         Assertions.assertTrue(fun.equals(a, b, 0.5f * diff));
 
         final float c = Math.nextUp(b);
         diff = Math.abs(a - c);
-        // Because "a" and "c" are not adjacent, the tolerance is taken into
-        // account for assessing equality.
+
+
         Assertions.assertTrue(fun.equals(a, c, diff));
         Assertions.assertFalse(fun.equals(a, c, Math.nextDown(1.0f) * diff));
     }
@@ -686,10 +686,10 @@ class PrecisionTest {
         final double afterEpsilon = Math.nextAfter(Precision.EPSILON,
                                                    Double.POSITIVE_INFINITY);
 
-        // a) 1 + EPSILON is equal to 1.
+
         Assertions.assertEquals(1, 1 + Precision.EPSILON);
 
-        // b) 1 + "the number after EPSILON" is not equal to 1.
+
         Assertions.assertNotEquals(1, 1 + afterEpsilon, 0.0);
     }
 

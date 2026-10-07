@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.examples.jmh.arrays;
 
@@ -28,23 +28,23 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link CompressedIndexSet} and {@link CompressedIndexSet2}.
- */
+
+
+
 class CompressedIndexSetTest {
-    /** Compression levels to test. */
+
     private static final int[] COMPRESSION = {1, 2, 3};
 
     @Test
     void testInvalidRangeThrows() {
-        // Valid compression
+
         final int c = 1;
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet.ofRange(c, -1, 3));
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet.ofRange(c, 0, -1));
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet.ofRange(c, 456, 123));
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet.of(c, new int[0]));
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet.of(c, new int[] {-1}));
-        // Fixed compression
+
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet2.ofRange(-1, 3));
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet2.ofRange(0, -1));
         Assertions.assertThrows(IllegalArgumentException.class, () -> CompressedIndexSet2.ofRange(456, 123));
@@ -69,8 +69,8 @@ class CompressedIndexSetTest {
             final int left = set.left();
             final int range = 1 << c;
             for (final int i : indices) {
-                // The contains value is a probability due to the compression.
-                // It will be true if any of the indices in the compressed range are set.
+
+
                 final int mapped = getCompressedIndexLow(c, left, i);
                 boolean contains = ref.get(mapped);
                 for (int j = 1; !contains && j < range; j++) {
@@ -119,11 +119,11 @@ class CompressedIndexSetTest {
                 }
                 set.set(i);
                 ref.set(i);
-                // Re-check within
+
                 for (int j = lo; j <= hi; j++) {
                     Assertions.assertEquals(j, set.previousIndexOrLeftMinus1(j), () -> "within: " + i);
                 }
-                // Check after
+
                 Assertions.assertEquals(hi, set.previousIndexOrLeftMinus1(hi + 1), () -> "after: " + i);
                 Assertions.assertEquals(hi, set.previousIndexOrLeftMinus1(hi + 42), () -> "after: " + i);
             }
@@ -143,7 +143,7 @@ class CompressedIndexSetTest {
             Assertions.assertEquals(set.right() + 1, set.nextIndexOrRightPlus1(0));
             Assertions.assertEquals(set.right() + 1, set.nextIndexOrRightPlus1(highBit));
             Assertions.assertEquals(set.right() + 1, set.nextIndexOrRightPlus1(highBit * 2));
-            // Process in descending order
+
             for (int i = -1, j = indices.length; ++i < --j;) {
                 final int k = indices[i];
                 indices[i] = indices[j];
@@ -171,11 +171,11 @@ class CompressedIndexSetTest {
                 }
                 set.set(i);
                 ref.set(i);
-                // Re-check within
+
                 for (int j = lo; j <= hi; j++) {
                     Assertions.assertEquals(j, set.nextIndexOrRightPlus1(j), () -> "within: " + i);
                 }
-                // Check before
+
                 Assertions.assertEquals(lo, set.nextIndexOrRightPlus1(lo - 1), () -> "before: " + i);
                 Assertions.assertEquals(lo, set.nextIndexOrRightPlus1(lo - 42), () -> "before: " + i);
             }
@@ -194,10 +194,10 @@ class CompressedIndexSetTest {
             Assertions.assertThrows(IndexOutOfBoundsException.class, () -> set.nextIndex(left - 1));
             Assertions.assertThrows(IndexOutOfBoundsException.class, () -> set.nextIndex(right + Long.SIZE << c));
             for (final int i : indices) {
-                // Test against validated method
+
                 final int lo = getCompressedIndexLow(c, left, i);
                 final int hi = getCompressedIndexHigh(c, left, right, i);
-                // Search with left <= k <= right
+
                 Assertions.assertTrue(lo >= left && hi <= right);
                 for (int j = lo; j <= hi; j++) {
                     Assertions.assertEquals(set.previousIndexOrLeftMinus1(j), set.previousIndex(j));
@@ -219,18 +219,18 @@ class CompressedIndexSetTest {
         for (final int size : new int[] {5, 500}) {
             final int[] a = rng.ints(10, 0, size).toArray();
             builder.accept(Arguments.of(a.clone(), size));
-            // Force use of index 0
+
             a[0] = 0;
             builder.accept(Arguments.of(a, size));
         }
-        // Large offset with an index at the end of the range
+
         final int n = 513;
-        // Use 1, 2, or 3 longs for storage
+
         builder.accept(Arguments.of(new int[] {n - 13, n - 1}, n));
         builder.accept(Arguments.of(new int[] {n - 78, n - 1}, n));
         builder.accept(Arguments.of(new int[] {n - 137, n - 1}, n));
-        // Uses a capacity of 512. BitSet will increase this to 512 + 64 to store index
-        // 513.
+
+
         builder.accept(Arguments.of(new int[] {1, n - 1}, n));
         return builder.build();
     }
@@ -245,8 +245,8 @@ class CompressedIndexSetTest {
         final int left = set.left();
         final int range = 1 << c;
         for (final int i : indices) {
-            // The contains value is a probability due to the compression.
-            // It will be true if any of the indices in the compressed range are set.
+
+
             final int mapped = getCompressedIndexLow(c, left, i);
             boolean contains = ref.get(mapped);
             for (int j = 1; !contains && j < range; j++) {
@@ -272,10 +272,10 @@ class CompressedIndexSetTest {
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> set.nextIndex(left - 1));
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> set.nextIndex(right + Long.SIZE << c));
         for (final int i : indices) {
-            // Test against validated method
+
             final int lo = getCompressedIndexLow(c, left, i);
             final int hi = getCompressedIndexHigh(c, left, right, i);
-            // Search with left <= k <= right
+
             Assertions.assertTrue(lo >= left && hi <= right);
             for (int j = lo; j <= hi; j++) {
                 Assertions.assertEquals(ref.previousIndexOrLeftMinus1(j), set.previousIndex(j));
@@ -290,13 +290,13 @@ class CompressedIndexSetTest {
         }
     }
 
-    /**
-     * Creates the compressed index set using the min/max of the indices.
-     *
-     * @param compression Compression level.
-     * @param indices Indices.
-     * @return the set
-     */
+
+
+
+
+
+
+
     private static CompressedIndexSet createCompressedIndexSet(int compression, int[] indices) {
         final int min = Arrays.stream(indices).min().getAsInt();
         final int max = Arrays.stream(indices).max().getAsInt();
@@ -306,12 +306,12 @@ class CompressedIndexSetTest {
         return set;
     }
 
-    /**
-     * Creates the compressed index set using the min/max of the indices.
-     *
-     * @param indices Indices.
-     * @return the set
-     */
+
+
+
+
+
+
     private static CompressedIndexSet2 createCompressedIndexSet2(int[] indices) {
         final int min = Arrays.stream(indices).min().getAsInt();
         final int max = Arrays.stream(indices).max().getAsInt();
@@ -321,44 +321,44 @@ class CompressedIndexSetTest {
         return set;
     }
 
-    /**
-     * Gets the lower bound of the index range covered by the compressed index.
-     * A compressed index covers a range of real indices. For example the
-     * indices i, j, k, and l are all represented by the same compressed index
-     * with a compression level of 2.
-     * <pre>
-     * -------ijkl------
-     * </pre>
-     *
-     * @param c Compression.
-     * @param left Lower bound of the set of compressed indices.
-     * @param i Index.
-     * @return the lower bound of the index range
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static int getCompressedIndexLow(int c, int left, int i) {
         return (((i - left) >>> c) << c) + left;
     }
 
-    /**
-     * Gets the upper bound of the index range covered by the compressed index.
-     * A compressed index covers a range of real indices. For example the
-     * indices i, j, k, and l are all represented by the same compressed index
-     * with a compression level of 2.
-     * <pre>
-     *          right
-     *          |
-     * -------ijkl------
-     * </pre>
-     *
-     * <p>This method returns l, unless clipped by the upper bound of the supported
-     * indices (right; in example above clipping would return k).
-     *
-     * @param c Compression.
-     * @param left Lower bound of the set of compressed indices.
-     * @param right Upper bound of the set of compressed indices.
-     * @param i Index.
-     * @return the upper bound of the index range
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static int getCompressedIndexHigh(int c, int left, int right, int i) {
         return Math.min(right, (((i - left) >>> c) << c) + left + (1 << c) - 1);
     }

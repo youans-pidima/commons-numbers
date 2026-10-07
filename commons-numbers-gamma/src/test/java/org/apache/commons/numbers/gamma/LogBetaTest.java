@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/**
- * Tests for {@link LogBeta}.
- */
+
+
+
 class LogBetaTest {
     private static final double[][] LOG_BETA_REF = {
         {0.125, 0.125, 2.750814190409515},
@@ -67,7 +67,7 @@ class LogBetaTest {
         {0.5, 1.0, .6931471805599453},
         {0.5, 2.0, .2876820724517809},
         {0.5, 3.0, .06453852113757118},
-//        {0.5, 4.0, -.08961215868968714},
+
         {0.5, 5.0, -.2073951943460706},
         {0.5, 6.0, -.3027053741503954},
         {0.5, 7.0, -.3827480818239319},
@@ -127,7 +127,7 @@ class LogBetaTest {
         {3.0, 10000.0, -26.9381739103716},
         {4.0, 0.125, 1.860211889686763},
         {4.0, 0.25, 0.965325066475761},
-//        {4.0, 0.5, -.08961215868968714},
+
         {4.0, 1.0, -1.386294361119891},
         {4.0, 2.0, -2.995732273553991},
         {4.0, 3.0, -4.0943445622221},
@@ -288,8 +288,8 @@ class LogBetaTest {
     };
 
     private static final double[][] LOG_GAMMA_MINUS_LOG_GAMMA_SUM_REF = {
-//          { 0.0 , 8.0 , 0.0 },
-//          { 0.0 , 9.0 , 0.0 },
+
+
         {0.0, 10.0, 0.0},
         {0.0, 11.0, 0.0},
         {0.0, 12.0, 0.0},
@@ -299,8 +299,8 @@ class LogBetaTest {
         {0.0, 16.0, 0.0},
         {0.0, 17.0, 0.0},
         {0.0, 18.0, 0.0},
-//        {1.0, 8.0, -2.079441541679836},
-//        {1.0, 9.0, -2.19722457733622},
+
+
         {1.0, 10.0, -2.302585092994046},
         {1.0, 11.0, -2.397895272798371},
         {1.0, 12.0, -2.484906649788},
@@ -310,8 +310,8 @@ class LogBetaTest {
         {1.0, 16.0, -2.772588722239781},
         {1.0, 17.0, -2.833213344056216},
         {1.0, 18.0, -2.890371757896165},
-//        {2.0, 8.0, -4.276666119016055},
-//        {2.0, 9.0, -4.499809670330265},
+
+
         {2.0, 10.0, -4.700480365792417},
         {2.0, 11.0, -4.882801922586371},
         {2.0, 12.0, -5.049856007249537},
@@ -321,8 +321,8 @@ class LogBetaTest {
         {2.0, 16.0, -5.605802066295998},
         {2.0, 17.0, -5.723585101952381},
         {2.0, 18.0, -5.834810737062605},
-//        {3.0, 8.0, -6.579251212010101},
-//        {3.0, 9.0, -6.897704943128636},
+
+
         {3.0, 10.0, -7.185387015580416},
         {3.0, 11.0, -7.447751280047908},
         {3.0, 12.0, -7.688913336864796},
@@ -332,8 +332,8 @@ class LogBetaTest {
         {3.0, 16.0, -8.496173824192162},
         {3.0, 17.0, -8.668024081118821},
         {3.0, 18.0, -8.830543010616596},
-//        {4.0, 8.0, -8.977146484808472},
-//        {4.0, 9.0, -9.382611592916636},
+
+
         {4.0, 10.0, -9.750336373041954},
         {4.0, 11.0, -10.08680860966317},
         {4.0, 12.0, -10.39696353796701},
@@ -343,8 +343,8 @@ class LogBetaTest {
         {4.0, 16.0, -11.4406128033586},
         {4.0, 17.0, -11.66375635467281},
         {4.0, 18.0, -11.87506544834002},
-//        {5.0, 8.0, -11.46205313459647},
-//        {5.0, 9.0, -11.94756095037817},
+
+
         {5.0, 10.0, -12.38939370265721},
         {5.0, 11.0, -12.79485881076538},
         {5.0, 12.0, -13.16955226020679},
@@ -354,8 +354,8 @@ class LogBetaTest {
         {5.0, 16.0, -14.43634507691259},
         {5.0, 17.0, -14.70827879239624},
         {5.0, 18.0, -14.96610790169833},
-//        {6.0, 8.0, -14.02700249205801},
-//        {6.0, 9.0, -14.58661827999343},
+
+
         {6.0, 10.0, -15.09744390375942},
         {6.0, 11.0, -15.56744753300516},
         {6.0, 12.0, -16.002765604263},
@@ -365,8 +365,8 @@ class LogBetaTest {
         {6.0, 16.0, -17.48086751463602},
         {6.0, 17.0, -17.79932124575455},
         {6.0, 18.0, -18.10160211762749},
-//        {7.0, 8.0, -16.66605982167327},
-//        {7.0, 9.0, -17.29466848109564},
+
+
         {7.0, 10.0, -17.8700326259992},
         {7.0, 11.0, -18.40066087706137},
         {7.0, 12.0, -18.89313736215917},
@@ -376,8 +376,8 @@ class LogBetaTest {
         {7.0, 16.0, -20.57190996799433},
         {7.0, 17.0, -20.9348154616837},
         {7.0, 18.0, -21.27965594797543},
-//        {8.0, 8.0, -19.37411002277548},
-//        {8.0, 9.0, -20.06725720333542},
+
+
         {8.0, 10.0, -20.70324597005542},
         {8.0, 11.0, -21.29103263495754},
         {8.0, 12.0, -21.83757634132561},
@@ -387,8 +387,8 @@ class LogBetaTest {
         {8.0, 16.0, -23.70740418392348},
         {8.0, 17.0, -24.11286929203165},
         {8.0, 18.0, -24.49853177284363},
-//        {9.0, 8.0, -22.14669874501526},
-//        {9.0, 9.0, -22.90047054739164},
+
+
         {9.0, 10.0, -23.59361772795159},
         {9.0, 11.0, -24.23547161412398},
         {9.0, 12.0, -24.8333086148796},
@@ -398,8 +398,8 @@ class LogBetaTest {
         {9.0, 16.0, -26.88545801427143},
         {9.0, 17.0, -27.33174511689985},
         {9.0, 18.0, -27.75662831086511},
-//        {10.0, 8.0, -24.97991208907148},
-//        {10.0, 9.0, -25.7908423052878},
+
+
         {10.0, 10.0, -26.53805670711802},
         {10.0, 11.0, -27.23120388767797},
         {10.0, 12.0, -27.87783105260302},
@@ -595,9 +595,9 @@ class LogBetaTest {
 
     private static double logGammaMinusLogGammaSum(final double a,
                                                    final double b) {
-        /*
-         * Use reflection to access private method.
-         */
+
+
+
         try {
             final Method m = LogBeta.class.getDeclaredMethod("logGammaMinusLogGammaSum",
                                                              Double.TYPE, Double.TYPE);
@@ -648,9 +648,9 @@ class LogBetaTest {
     private static double sumDeltaMinusDeltaSum(final double a,
                                                 final double b) {
 
-        /*
-         * Use reflection to access private method.
-         */
+
+
+
         try {
             final Method m = LogBeta.class.getDeclaredMethod("sumDeltaMinusDeltaSum",
                                                              Double.TYPE, Double.TYPE);
@@ -698,21 +698,21 @@ class LogBetaTest {
         );
     }
 
-    /**
-     * Hit edge case for log(beta(a,b)) = log(gamma(a)*gamma(b)/gamma(a+b))
-     * where gamma(a)*gamma(b) will overflow.
-     *
-     * <p>See NUMBERS-182.
-     */
+
+
+
+
+
+
     @ParameterizedTest
     @CsvSource({
-        // Computed using matlab betaln(a, b)
+
         "1e-155, 1.5e-155, 357.41151503784306",
-        // MIN NORMAL, MIN_NORMAL * 3/4
+
         "2.2250738585072014E-308, 1.668805393880401E-308, 709.2437163926513",
-        // MIN_VALUE, MIN_VALUE * 2
+
         "4.9E-324, 1.0E-323, 744.84553702948938",
-        // MIN_VALUE, MIN_VALUE
+
         "4.9E-324, 4.9E-324, 745.13321910194111",
     })
     void testTinyAB(double a, double b, double expected) {

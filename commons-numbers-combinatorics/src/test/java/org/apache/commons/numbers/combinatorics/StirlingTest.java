@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.combinatorics;
 
 import java.util.List;
@@ -30,16 +30,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test cases for the {@link Stirling} class.
- */
+
+
+
 class StirlingTest {
 
-    /**
-     * Arguments that are illegal for the Stirling number computations.
-     *
-     * @return the arguments
-     */
+
+
+
+
+
     static Stream<Arguments> stirlingIllegalArguments() {
         return Stream.of(
             Arguments.of(1, -1),
@@ -53,13 +53,13 @@ class StirlingTest {
         );
     }
 
-    /**
-     * Arguments that should easily overflow the Stirling number computations.
-     * Used to verify the exception is correct
-     * (e.g. no StackOverflowError occurs due to recursion).
-     *
-     * @return the arguments
-     */
+
+
+
+
+
+
+
     static Stream<Arguments> stirlingOverflowArguments() {
         return Stream.of(
             Arguments.of(123, 32),
@@ -101,7 +101,7 @@ class StirlingTest {
 
     @ParameterizedTest
     @CsvSource({
-        // Data verified using Mathematica StirlingS1[n, k]
+
         "5, 3, 35",
         "6, 3, -225",
         "6, 4, 85",
@@ -123,8 +123,8 @@ class StirlingTest {
         "10, 6, 63273",
         "10, 7, -9450",
         "10, 8, 870",
-        // n >= 21 is not cached
-        // ... k in [1, 7] require n <= 21
+
+
         "21, 8, -311333643161390640",
         "21, 9, 63030812099294896",
         "22, 10, 276019109275035346",
@@ -138,7 +138,7 @@ class StirlingTest {
         "27, 18, -28460103232088385",
         "28, 19, -60383004803151030",
         "29, 20, -124243455209483610",
-        // k in [n-8, n-2]
+
         "33, 25, 42669229615802790",
         "40, 33, -16386027912368400",
         "66, 60, 98715435586436240",
@@ -146,10 +146,10 @@ class StirlingTest {
         "404, 400, 1793805203416799170",
         "1003, 1000, -21063481189500750",
         "10002, 10000, 1250583420837500",
-        // Limits for k in [n-1, n] use n = Integer.MAX_VALUE
+
         "2147483647, 2147483646, -2305843005992468481",
         "2147483647, 2147483647, 1",
-        // Data for s(n, n-2)
+
         "21, 19, 20615",
         "22, 20, 25025",
         "23, 21, 30107",
@@ -160,7 +160,7 @@ class StirlingTest {
         "92679, 92677, 9221886003909976111",
         "92680, 92678, 9222284027979459010",
         "92681, 92679, 9222682064933083810",
-        // Data for s(n, n-3)
+
         "21, 18, -1256850",
         "22, 19, -1689765",
         "23, 20, -2240315",
@@ -178,7 +178,7 @@ class StirlingTest {
 
     @ParameterizedTest
     @CsvSource({
-        // Upper limits for n with k in [1, 20]
+
         "21, 1, 2432902008176640000",
         "21, 2, -8752948036761600000",
         "20, 3, -668609730341153280",
@@ -199,7 +199,7 @@ class StirlingTest {
         "28, 18, 1340675942971287195",
         "29, 19, 3031400077459516035",
         "30, 20, 6634460278534540725",
-        // Upper limits for n with k in [n-9, n-2]
+
         "35, 26, -5576855646887454930",
         "44, 36, 6364808704290634598",
         "61, 54, -8424028440309413250",
@@ -246,7 +246,7 @@ class StirlingTest {
 
     @ParameterizedTest
     @CsvSource({
-        // Data verified using Mathematica StirlingS2[n, k]
+
         "5, 3, 25",
         "6, 3, 90",
         "6, 4, 65",
@@ -268,13 +268,13 @@ class StirlingTest {
         "10, 6, 22827",
         "10, 7, 5880",
         "10, 8, 750",
-        // n >= 26 is not cached
+
         "30, 2, 536870911",
         "37, 3, 75047248929022825",
         "31, 4, 192050639071964750",
         "29, 5, 1540200411172850701",
         "26, 6, 224595186974125331",
-        // ... k in [7, 13] require n < 26
+
         "26, 14, 477898618396288260",
         "26, 15, 90449030191104000",
         "26, 16, 12725877242482560",
@@ -282,16 +282,16 @@ class StirlingTest {
         "27, 18, 3270191625210510",
         "28, 19, 7626292886912700",
         "28, 20, 474194413703010",
-        // k in [n-6, n-2]
+
         "56, 50, 8735311973699025",
         "115, 110, 79593419077014150",
         "204, 200, 7075992116527915",
         "1003, 1000, 20979521187625000",
         "10002, 10000, 1250416704167500",
-        // Limits for k in [n-1, n] use n = Integer.MAX_VALUE
+
         "2147483647, 2147483646, 2305843005992468481",
         "2147483647, 2147483647, 1",
-        // Data for S(n, n-2)
+
         "26, 24, 47450",
         "27, 25, 55575",
         "28, 26, 64701",
@@ -302,7 +302,7 @@ class StirlingTest {
         "92680, 92678, 9222151351858080650",
         "92681, 92679, 9222549384516960590",
         "92682, 92680, 9222947430060167790",
-        // Data for S(n, n-3)
+
         "26, 23, 4126200",
         "27, 24, 5265000",
         "28, 25, 6654375",
@@ -320,7 +320,7 @@ class StirlingTest {
 
     @ParameterizedTest
     @CsvSource({
-        // Upper limits for n with k in [2, 22]
+
         "64, 2, 9223372036854775807",
         "41, 3, 6078831630016836625",
         "33, 4, 3073530837671316330",
@@ -342,7 +342,7 @@ class StirlingTest {
         "30, 20, 581535955088511150",
         "31, 21, 1359760239259935240",
         "32, 22, 3069483578649883980",
-        // Upper limits for n with k in [n-10, n-2]
+
         "33, 23, 6708404338089491700",
         "38, 29, 6766081393022256030",
         "47, 39, 8248929419122431611",
@@ -445,15 +445,15 @@ class StirlingTest {
                                 () -> {
                                     final Iterator<int[][]> s =
                                         Stirling.S2.of(5, 5).partitionGenerator().iterator();
-                                    s.next(); // OK.
-                                    s.next(); // Must fail.
+                                    s.next();
+                                    s.next();
                                 });
     }
 
-    /**
-     * @param n Number of items.
-     * @param k Number of sublists.
-     */
+
+
+
+
     private List<int[][]> s2PartitionGenerator(int n,
                                                int k) {
         return Stirling.S2.of(n, k).stream().collect(Collectors.toList());

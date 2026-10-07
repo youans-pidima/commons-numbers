@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.arrays;
 
@@ -32,28 +32,28 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link Selection} and {@link QuickSelect}.
- */
+
+
+
 class SelectionTest {
-    /** Default sub-sampling size for the Floyd-Rivest algorithm. */
+
     private static final int SU = 1200;
-    /** Signal to ignore the range of [from, to). */
+
     private static final int IGNORE_FROM = -1236481268;
 
-    /**
-     * {@link UpdatingInterval} for range {@code [left, right]}.
-     */
+
+
+
     static final class RangeInterval implements UpdatingInterval {
-        /** Left bound of the interval. */
+
         private int left;
-        /** Right bound of the interval. */
+
         private int right;
 
-        /**
-         * @param left Left bound.
-         * @param right Right bound.
-         */
+
+
+
+
         RangeInterval(int left, int right) {
             this.left = left;
             this.right = right;
@@ -71,109 +71,109 @@ class SelectionTest {
 
         @Override
         public int updateLeft(int k) {
-            // Assume left < k <= right
+
             left = k;
             return k;
         }
 
         @Override
         public int updateRight(int k) {
-            // Assume left <= k < right
+
             right = k;
             return k;
         }
 
         @Override
         public UpdatingInterval splitLeft(int ka, int kb) {
-            // Assume left < ka <= kb < right
+
             final int lower = left;
             left = kb + 1;
             return new RangeInterval(lower, ka - 1);
         }
     }
 
-    /**
-     * Partition function. Used to test different implementations.
-     */
+
+
+
     private interface DoubleRangePartitionFunction {
-        /**
-         * Partition the array such that range of indices {@code [ka, kb]} correspond to
-         * their correctly sorted value in the equivalent fully sorted array. For all
-         * indices {@code k} and any index {@code i}:
-         *
-         * <pre>{@code
-         * data[i < k] <= data[k] <= data[k < i]
-         * }</pre>
-         *
-         * @param a Data array to use to find out the K<sup>th</sup> value.
-         * @param left Lower bound (inclusive).
-         * @param right Upper bound (inclusive).
-         * @param ka Lower index to select.
-         * @param kb Upper index to select.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         void partition(double[] a, int left, int right, int ka, int kb);
     }
 
-    /**
-     * Partition function. Used to test different implementations.
-     */
+
+
+
     private interface DoublePartitionFunction {
-        /**
-         * Partition the array such that indices {@code k} correspond to their correctly
-         * sorted value in the equivalent fully sorted array. For all indices {@code k}
-         * and any index {@code i}:
-         *
-         * <pre>{@code
-         * data[i < k] <= data[k] <= data[k < i]
-         * }</pre>
-         *
-         * <p>This method allows variable length indices using a count of the indices to
-         * process.
-         *
-         * @param a Values.
-         * @param k Indices.
-         * @param n Count of indices.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         void partition(double[] a, int[] k, int n);
     }
 
-    /**
-     * Return a sorted copy of the {@code values}.
-     *
-     * @param values Values.
-     * @return the copy
-     */
+
+
+
+
+
+
     private static double[] sort(double[] values) {
         final double[] sorted = values.clone();
         Arrays.sort(sorted);
         return sorted;
     }
 
-    /**
-     * Return a copy of the {@code values} sorted in the range {@code [from, to]}.
-     *
-     * @param values Values.
-     * @param from From (inclusive).
-     * @param to To (inclusive).
-     * @return the copy
-     */
+
+
+
+
+
+
+
+
     private static double[] sort(double[] values, int from, int to) {
         final double[] sorted = values.clone();
         Arrays.sort(sorted, from, to + 1);
         return sorted;
     }
 
-    /**
-     * Move NaN values to the end of the array.
-     * This allows all other values to be compared using {@code <, ==, >} operators (with
-     * the exception of signed zeros).
-     *
-     * @param data Values.
-     * @return index of last non-NaN value (or -1)
-     */
+
+
+
+
+
+
+
+
     private static int sortNaN(double[] data) {
         int end = data.length;
-        // Find first non-NaN
+
         while (--end >= 0) {
             if (!Double.isNaN(data[end])) {
                 break;
@@ -182,7 +182,7 @@ class SelectionTest {
         for (int i = end; --i >= 0;) {
             final double v = data[i];
             if (Double.isNaN(v)) {
-                // swap(data, i, end--)
+
                 data[i] = data[end];
                 data[end] = v;
                 end--;
@@ -191,13 +191,13 @@ class SelectionTest {
         return end;
     }
 
-    /**
-     * Replace negative zeros with a proxy. Uses -{@link Double#MIN_VALUE} as the proxy.
-     *
-     * @param a Data.
-     * @param from Lower bound (inclusive).
-     * @param to Upper bound (inclusive).
-     */
+
+
+
+
+
+
+
     private static void replaceNegativeZeros(double[] a, int from, int to) {
         for (int i = from; i <= to; i++) {
             if (Double.doubleToRawLongBits(a[i]) == Long.MIN_VALUE) {
@@ -206,13 +206,13 @@ class SelectionTest {
         }
     }
 
-    /**
-     * Restore proxy negative zeros.
-     *
-     * @param a Data.
-     * @param from Lower bound (inclusive).
-     * @param to Upper bound (inclusive).
-     */
+
+
+
+
+
+
+
     private static void restoreNegativeZeros(double[] a, int from, int to) {
         for (int i = from; i <= to; i++) {
             if (a[i] == -Double.MIN_VALUE) {
@@ -232,11 +232,11 @@ class SelectionTest {
         for (int k = from; k <= to; k++) {
             assertPartitionRange(sorted, fun, x.clone(), from, to, k, k);
             if (k > from) {
-                // Sort an extra 1
+
                 assertPartitionRange(sorted, fun, x.clone(), from, to, k - 1, k);
                 if (k > from + 1) {
-                    // Sort all
-                    // Test clipping with k < from
+
+
                     assertPartitionRange(sorted, fun, x.clone(), from, to, from - 23, k);
                 }
             }
@@ -254,11 +254,11 @@ class SelectionTest {
         for (int k = from; k <= to; k++) {
             assertPartitionRange(sorted, fun, x.clone(), from, to, k, k);
             if (k < to) {
-                // Sort an extra 1
+
                 assertPartitionRange(sorted, fun, x.clone(), from, to, k, k + 1);
                 if (k < to - 1) {
-                    // Sort all
-                    // Test clipping with k > to
+
+
                     assertPartitionRange(sorted, fun, x.clone(), from, to, k, to + 23);
                 }
             }
@@ -393,30 +393,30 @@ class SelectionTest {
             QuickSelect::sortSelect, values, from, to, k1, k2);
     }
 
-    /**
-     * Assert the function correctly partitions the range.
-     *
-     * @param sorted Expected sort result.
-     * @param fun Partition function.
-     * @param values Values.
-     * @param from From (inclusive).
-     * @param to To (inclusive).
-     * @param ka Lower index to select.
-     * @param kb Upper index to select.
-     */
+
+
+
+
+
+
+
+
+
+
+
     private static void assertPartitionRange(double[] sorted,
             DoubleRangePartitionFunction fun,
             double[] values, int from, int to, int ka, int kb) {
         Arrays.sort(sorted, from, to + 1);
         fun.partition(values, from, to, ka, kb);
-        // Clip
+
         ka = ka < from ? from : ka;
         kb = kb > to ? to : kb;
         for (int i = ka; i <= kb; i++) {
             final int index = i;
             Assertions.assertEquals(sorted[i], values[i], () -> "index: " + index);
         }
-        // Check the data is the same
+
         Arrays.sort(values, from, to + 1);
         Assertions.assertArrayEquals(sorted, values, "Data destroyed");
     }
@@ -447,25 +447,25 @@ class SelectionTest {
     static Stream<Arguments> testDoubleSelectThrows() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final double[] a = {1, 2, 3, Double.NaN, 0.0, -0.0};
-        // Invalid range
+
         builder.add(Arguments.of(a.clone(), new int[] {0}, 0, a.length + 1));
         builder.add(Arguments.of(a.clone(), new int[] {0}, -1, a.length));
         builder.add(Arguments.of(a.clone(), new int[] {0}, 0, 0));
         builder.add(Arguments.of(a.clone(), new int[] {0}, a.length, 0));
         builder.add(Arguments.of(a.clone(), new int[] {1}, 3, 1));
-        // Single k
-        // Full length
+
+
         builder.add(Arguments.of(a.clone(), new int[] {-1}, IGNORE_FROM, 0));
         builder.add(Arguments.of(a.clone(), new int[] {10}, IGNORE_FROM, 0));
-        // Range
+
         builder.add(Arguments.of(a.clone(), new int[] {-1}, 0, 5));
         builder.add(Arguments.of(a.clone(), new int[] {1}, 2, 5));
         builder.add(Arguments.of(a.clone(), new int[] {10}, 2, 5));
-        // Multiple k, some invalid
-        // Full length
+
+
         builder.add(Arguments.of(a.clone(), new int[] {0, -1, 1, 2}, IGNORE_FROM, 0));
         builder.add(Arguments.of(a.clone(), new int[] {0, 2, 3, 10}, IGNORE_FROM, 0));
-        // Range
+
         builder.add(Arguments.of(a.clone(), new int[] {0, -1, 1, 2}, 0, 5));
         builder.add(Arguments.of(a.clone(), new int[] {2, 3, 1}, 2, 5));
         builder.add(Arguments.of(a.clone(), new int[] {2, 10, 3}, 2, 5));
@@ -517,7 +517,7 @@ class SelectionTest {
     void testDoubleDualPivotQuickSelectMaxRecursion(double[] values, int[] indices) {
         assertPartition(values, indices, (a, k, n) -> {
             final int right = sortNaN(a);
-            // Sanitise indices
+
             k = Arrays.stream(k).filter(i -> i <= right).toArray();
             if (right < 1 || k.length == 0) {
                 return;
@@ -562,15 +562,15 @@ class SelectionTest {
         }, false);
     }
 
-    /**
-     * Test that selection on a sub-range does not modify data outside the range
-     * {@code [fromIndex, toIndex)} when restoring signed zeros, and restores the
-     * negative zeros inside the range.
-     */
+
+
+
+
+
     @Test
     void testDoubleSelectRangeSignedZerosOutsideRangeUntouched() {
-        // A zero below the range must not be rewritten by the restoration scan
-        // when the range contains no negative values to fast-forward from.
+
+
         final double[] a = {0.0, 0.0, -0.0};
         Selection.select(a, 1, 3, 2);
         Assertions.assertArrayEquals(new double[] {0.0, -0.0, 0.0}, a, "single k");
@@ -579,16 +579,16 @@ class SelectionTest {
         Assertions.assertArrayEquals(new double[] {0.0, -0.0, 0.0}, b, "multiple k");
     }
 
-    /**
-     * Test that selection on a sub-range does not modify data outside the range
-     * {@code [fromIndex, toIndex)} when restoring signed zeros using the
-     * fast-forward from sorted partition indices with values below zero.
-     */
+
+
+
+
+
     @Test
     void testDoubleSelectRangeSignedZerosFastForwardWithinRange() {
-        // Negative values inside the range: the fast-forward must use the
-        // partition index into the data, not the index into k, otherwise the
-        // restoration scan may start below fromIndex.
+
+
+
         final double[] a = {0.0, 0.0, 0.0, 0.0, 7.0, -1.0, -0.0, 8.0, -3.0, -2.0};
         Selection.select(a, 4, 10, new int[] {4, 5, 6, 7, 8, 9});
         Assertions.assertArrayEquals(
@@ -599,7 +599,7 @@ class SelectionTest {
         boolean sortedRange) {
         final double[] data = values.clone();
         final double[] sorted = sort(values);
-        // Indices may be destructively modified
+
         function.partition(data, indices.clone(), indices.length);
         if (indices.length == 0) {
             return;
@@ -607,7 +607,7 @@ class SelectionTest {
         for (final int k : indices) {
             Assertions.assertEquals(sorted[k], data[k], () -> "k[" + k + "]");
         }
-        // Check partial ordering
+
         Arrays.sort(indices);
         int i = 0;
         for (final int k : indices) {
@@ -639,8 +639,8 @@ class SelectionTest {
     static Stream<Arguments> testDoublePartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning.
-        // The largest size should trigger single-pivot sub-sampling for pivot selection.
+
+
         for (final int size : new int[] {5, 47, SU + 10}) {
             final int halfSize = size >>> 1;
             final int from = -halfSize;
@@ -652,7 +652,7 @@ class SelectionTest {
             Arrays.fill(zeros, halfSize, halfSize + quarterSize, 0.0);
             for (final int k : new int[] {1, 2, 3, size}) {
                 for (int i = 0; i < 15; i++) {
-                    // Note: Duplicate indices do not matter
+
                     final int[] indices = rng.ints(k, 0, size).toArray();
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
@@ -662,22 +662,22 @@ class SelectionTest {
                         indices.clone()));
                 }
             }
-            // Test sequential processing by creating potential ranges
-            // after an initial low point. This should be high enough
-            // so any range analysis that joins indices will leave the initial
-            // index as a single point.
+
+
+
+
             final int limit = 50;
             if (size > limit) {
                 for (int i = 0; i < 10; i++) {
                     final int[] indices = rng.ints(size - limit, limit, size).toArray();
-                    // This sets a low index
+
                     indices[rng.nextInt(indices.length)] = rng.nextInt(0, limit >>> 1);
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
                         indices.clone()));
                 }
             }
-            // min; max; min/max
+
             builder.add(Arguments.of(values.clone(), new int[] {0}));
             builder.add(Arguments.of(values.clone(), new int[] {size - 1}));
             builder.add(Arguments.of(values.clone(), new int[] {0, size - 1}));
@@ -695,33 +695,33 @@ class SelectionTest {
         builder.add(Arguments.of(new double[] {nan, 0.0, 1, -0.0, nan}, new int[] {1, 3}));
         builder.add(Arguments.of(new double[] {nan, 0.0, -0.0}, new int[] {0, 2}));
         builder.add(Arguments.of(new double[] {nan, 1.23, 0.0, -4.56, -0.0, nan}, new int[] {0, 1, 3}));
-        // Dual-pivot with a large middle region (> 5 / 8) requires equal elements loop
+
         final int n = 128;
         final double[] x = IntStream.range(0, n).asDoubleStream().toArray();
-        // Put equal elements in the central region:
-        //          2/16      6/16             10/16      14/16
-        // |  <P1    |    P1   |   P1< & < P2    |    P2    |    >P2    |
+
+
+
         final int sixteenth = n / 16;
         final int i2 = 2 * sixteenth;
         final int i6 = 6 * sixteenth;
         final double p1 = x[i2];
         final double p2 = x[n - i2];
-        // Lots of values equal to the pivots
+
         Arrays.fill(x, i2, i6, p1);
         Arrays.fill(x, n - i6, n - i2, p2);
-        // Equal value in between the pivots
+
         Arrays.fill(x, i6, n - i6, (p1 + p2) / 2);
-        // ArraySampler.shuffle this and partition in the middle.
-        // Also partition with the pivots in P1 and P2 using thirds.
+
+
         final int third = (int) (n / 3.0);
-        // Use a fix seed to ensure we hit coverage with only 5 loops.
+
         rng = RandomSource.XO_SHI_RO_128_PP.create(-8111061151820577011L);
         for (int i = 0; i < 5; i++) {
             builder.add(Arguments.of(ArraySampler.shuffle(rng, x.clone()), new int[] {n >> 1}));
             builder.add(Arguments.of(ArraySampler.shuffle(rng, x.clone()),
                 new int[] {third, 2 * third}));
         }
-        // A single value smaller/greater than the pivot at the left/right/both ends
+
         Arrays.fill(x, 1);
         for (int i = 0; i <= 2; i++) {
             for (int j = 0; j <= 2; j++) {
@@ -730,7 +730,7 @@ class SelectionTest {
                 builder.add(Arguments.of(x.clone(), new int[] {50}));
             }
         }
-        // Reverse data. Makes it simple to detect failed range selection.
+
         final double[] a = IntStream.range(0, 50).asDoubleStream().toArray();
         for (int i = -1, j = a.length; ++i < --j;) {
             final double v = a[i];
@@ -749,10 +749,10 @@ class SelectionTest {
     static Stream<Arguments> testDoublePartitionBigData() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above the threshold (1200) for recursive partitioning
+
         for (final int size : new int[] {1000, 5000, 10000}) {
             final double[] a = IntStream.range(0, size).asDoubleStream().toArray();
-            // With repeat elements
+
             final double[] b = rng.ints(size, 0, size >> 3).asDoubleStream().toArray();
             for (int i = 0; i < 15; i++) {
                 builder.add(Arguments.of(
@@ -762,13 +762,13 @@ class SelectionTest {
                     new int[] {rng.nextInt(size)}));
             }
         }
-        // Hit Floyd-Rivest sub-sampling conditions.
-        // Close to edge but outside edge select size.
+
+
         final int n = 7000;
         final double[] x = IntStream.range(0, n).asDoubleStream().toArray();
         builder.add(Arguments.of(x.clone(), new int[] {20}));
         builder.add(Arguments.of(x.clone(), new int[] {n - 1 - 20}));
-        // Constant value when using FR partitioning
+
         Arrays.fill(x, 1.23);
         builder.add(Arguments.of(x, new int[] {x.length >>> 1}));
         return builder.build();
@@ -803,33 +803,33 @@ class SelectionTest {
 
     static Stream<Arguments> testDoubleExpandPartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
-        // Create data:
-        // |l          |start       |p0  p1|    end|            r|
-        // |     ???   |     <      |  ==  |   >   |     ???     |
-        // Arguments: data, start, end, pivot0, pivot1
 
-        // Create the data with unique values 42 and 0 either side of
-        // [start, end] (e.g. region ???). These are permuted for -1 and 10
-        // to create cases that may or not have to swap elements.
 
-        // Single pivot
+
+
+
+
+
+
+
+
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 3, 4, 0}, 1, 4, 2, 2);
-        // Pivot range
+
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 2, 3, 0}, 1, 4, 2, 3);
-        // Single pivot at start/end
+
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 3, 4, 0}, 1, 4, 1, 1);
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 3, 4, 0}, 1, 4, 4, 4);
-        // Pivot range at start/end
+
         addExpandPartitionArguments(builder, new double[] {42, 1, 1, 2, 3, 0}, 1, 4, 1, 2);
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 3, 3, 0}, 1, 4, 3, 4);
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 2, 2, 0}, 1, 4, 2, 4);
         addExpandPartitionArguments(builder, new double[] {42, 1, 1, 1, 2, 0}, 1, 4, 1, 3);
         addExpandPartitionArguments(builder, new double[] {42, 1, 1, 1, 1, 0}, 1, 4, 1, 4);
 
-        // Single pivot at left/right
+
         addExpandPartitionArguments(builder, new double[] {1, 2, 3, 4, 0}, 0, 3, 0, 0);
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 3, 4}, 1, 4, 4, 4);
-        // Pivot range at left/right
+
         addExpandPartitionArguments(builder, new double[] {1, 1, 2, 3, 4, 0}, 0, 4, 0, 1);
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 3, 4, 4}, 1, 5, 4, 5);
         addExpandPartitionArguments(builder, new double[] {1, 1, 1, 1, 2, 0}, 0, 4, 0, 3);
@@ -837,7 +837,7 @@ class SelectionTest {
         addExpandPartitionArguments(builder, new double[] {1, 1, 1, 1, 1, 0}, 0, 4, 0, 4);
         addExpandPartitionArguments(builder, new double[] {42, 4, 4, 4, 4, 4}, 1, 5, 1, 5);
 
-        // Minimum range: [start, end] == length 2
+
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 0}, 1, 2, 1, 1);
         addExpandPartitionArguments(builder, new double[] {42, 1, 2, 0}, 1, 2, 2, 2);
         addExpandPartitionArguments(builder, new double[] {42, 1, 1, 0}, 1, 2, 1, 2);
@@ -886,7 +886,7 @@ class SelectionTest {
         Assumptions.assumeTrue(values.length > 0);
         assertSort(values, x -> {
             final int right = sortNaN(x);
-            // heapSelect is robust to right <= left
+
             replaceNegativeZeros(x, 0, right);
             QuickSelect.heapSelect(x, 0, right, 0, right);
             restoreNegativeZeros(x, 0, right);
@@ -926,8 +926,8 @@ class SelectionTest {
     @ParameterizedTest
     @MethodSource(value = {"testDoubleSort"})
     void testDoubleSortUsingSelection(double[] values) {
-        // This tests that the select function performs
-        // a full sort when the interval is saturated
+
+
         assertSort(values, a -> {
             final int right = sortNaN(a);
             if (right < 1) {
@@ -950,7 +950,7 @@ class SelectionTest {
     static Stream<double[]> testDoubleSort() {
         final Stream.Builder<double[]> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning
+
         for (final int size : new int[] {5, 50}) {
             double[] a = new double[size];
             Arrays.fill(a, 1.23);
@@ -995,71 +995,71 @@ class SelectionTest {
         return builder.build();
     }
 
-    /**
-     * Partition function. Used to test different implementations.
-     */
+
+
+
     private interface IntRangePartitionFunction {
-        /**
-         * Partition the array such that range of indices {@code [ka, kb]} correspond to
-         * their correctly sorted value in the equivalent fully sorted array. For all
-         * indices {@code k} and any index {@code i}:
-         *
-         * <pre>{@code
-         * data[i < k] <= data[k] <= data[k < i]
-         * }</pre>
-         *
-         * @param a Data array to use to find out the K<sup>th</sup> value.
-         * @param left Lower bound (inclusive).
-         * @param right Upper bound (inclusive).
-         * @param ka Lower index to select.
-         * @param kb Upper index to select.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         void partition(int[] a, int left, int right, int ka, int kb);
     }
 
-    /**
-     * Partition function. Used to test different implementations.
-     */
+
+
+
     private interface IntPartitionFunction {
-        /**
-         * Partition the array such that indices {@code k} correspond to their correctly
-         * sorted value in the equivalent fully sorted array. For all indices {@code k}
-         * and any index {@code i}:
-         *
-         * <pre>{@code
-         * data[i < k] <= data[k] <= data[k < i]
-         * }</pre>
-         *
-         * <p>This method allows variable length indices using a count of the indices to
-         * process.
-         *
-         * @param a Values.
-         * @param k Indices.
-         * @param n Count of indices.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         void partition(int[] a, int[] k, int n);
     }
 
-    /**
-     * Return a sorted copy of the {@code values}.
-     *
-     * @param values Values.
-     * @return the copy
-     */
+
+
+
+
+
+
     private static int[] sort(int[] values) {
         final int[] sorted = values.clone();
         Arrays.sort(sorted);
         return sorted;
     }
 
-    /**
-     * Return a copy of the {@code values} sorted in the range {@code [from, to]}.
-     *
-     * @param values Values.
-     * @param from From (inclusive).
-     * @param to To (inclusive).
-     * @return the copy
-     */
+
+
+
+
+
+
+
+
     private static int[] sort(int[] values, int from, int to) {
         final int[] sorted = values.clone();
         Arrays.sort(sorted, from, to + 1);
@@ -1077,11 +1077,11 @@ class SelectionTest {
         for (int k = from; k <= to; k++) {
             assertPartitionRange(sorted, fun, x.clone(), from, to, k, k);
             if (k > from) {
-                // Sort an extra 1
+
                 assertPartitionRange(sorted, fun, x.clone(), from, to, k - 1, k);
                 if (k > from + 1) {
-                    // Sort all
-                    // Test clipping with k < from
+
+
                     assertPartitionRange(sorted, fun, x.clone(), from, to, from - 23, k);
                 }
             }
@@ -1099,11 +1099,11 @@ class SelectionTest {
         for (int k = from; k <= to; k++) {
             assertPartitionRange(sorted, fun, x.clone(), from, to, k, k);
             if (k < to) {
-                // Sort an extra 1
+
                 assertPartitionRange(sorted, fun, x.clone(), from, to, k, k + 1);
                 if (k < to - 1) {
-                    // Sort all
-                    // Test clipping with k > to
+
+
                     assertPartitionRange(sorted, fun, x.clone(), from, to, k, to + 23);
                 }
             }
@@ -1238,30 +1238,30 @@ class SelectionTest {
             QuickSelect::sortSelect, values, from, to, k1, k2);
     }
 
-    /**
-     * Assert the function correctly partitions the range.
-     *
-     * @param sorted Expected sort result.
-     * @param fun Partition function.
-     * @param values Values.
-     * @param from From (inclusive).
-     * @param to To (inclusive).
-     * @param ka Lower index to select.
-     * @param kb Upper index to select.
-     */
+
+
+
+
+
+
+
+
+
+
+
     private static void assertPartitionRange(int[] sorted,
             IntRangePartitionFunction fun,
             int[] values, int from, int to, int ka, int kb) {
         Arrays.sort(sorted, from, to + 1);
         fun.partition(values, from, to, ka, kb);
-        // Clip
+
         ka = ka < from ? from : ka;
         kb = kb > to ? to : kb;
         for (int i = ka; i <= kb; i++) {
             final int index = i;
             Assertions.assertEquals(sorted[i], values[i], () -> "index: " + index);
         }
-        // Check the data is the same
+
         Arrays.sort(values, from, to + 1);
         Assertions.assertArrayEquals(sorted, values, "Data destroyed");
     }
@@ -1292,25 +1292,25 @@ class SelectionTest {
     static Stream<Arguments> testIntSelectThrows() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final int[] a = {1, 2, 3, -123, 0, -1};
-        // Invalid range
+
         builder.add(Arguments.of(a.clone(), new int[] {0}, 0, a.length + 1));
         builder.add(Arguments.of(a.clone(), new int[] {0}, -1, a.length));
         builder.add(Arguments.of(a.clone(), new int[] {0}, 0, 0));
         builder.add(Arguments.of(a.clone(), new int[] {0}, a.length, 0));
         builder.add(Arguments.of(a.clone(), new int[] {1}, 3, 1));
-        // Single k
-        // Full length
+
+
         builder.add(Arguments.of(a.clone(), new int[] {-1}, IGNORE_FROM, 0));
         builder.add(Arguments.of(a.clone(), new int[] {10}, IGNORE_FROM, 0));
-        // Range
+
         builder.add(Arguments.of(a.clone(), new int[] {-1}, 0, 5));
         builder.add(Arguments.of(a.clone(), new int[] {1}, 2, 5));
         builder.add(Arguments.of(a.clone(), new int[] {10}, 2, 5));
-        // Multiple k, some invalid
-        // Full length
+
+
         builder.add(Arguments.of(a.clone(), new int[] {0, -1, 1, 2}, IGNORE_FROM, 0));
         builder.add(Arguments.of(a.clone(), new int[] {0, 2, 3, 10}, IGNORE_FROM, 0));
-        // Range
+
         builder.add(Arguments.of(a.clone(), new int[] {0, -1, 1, 2}, 0, 5));
         builder.add(Arguments.of(a.clone(), new int[] {2, 3, 1}, 2, 5));
         builder.add(Arguments.of(a.clone(), new int[] {2, 10, 3}, 2, 5));
@@ -1400,7 +1400,7 @@ class SelectionTest {
         boolean sortedRange) {
         final int[] data = values.clone();
         final int[] sorted = sort(values);
-        // Indices may be destructively modified
+
         function.partition(data, indices.clone(), indices.length);
         if (indices.length == 0) {
             return;
@@ -1408,7 +1408,7 @@ class SelectionTest {
         for (final int k : indices) {
             Assertions.assertEquals(sorted[k], data[k], () -> "k[" + k + "]");
         }
-        // Check partial ordering
+
         Arrays.sort(indices);
         int i = 0;
         for (final int k : indices) {
@@ -1440,8 +1440,8 @@ class SelectionTest {
     static Stream<Arguments> testIntPartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning.
-        // The largest size should trigger single-pivot sub-sampling for pivot selection.
+
+
         for (final int size : new int[] {5, 47, SU + 10}) {
             final int halfSize = size >>> 1;
             final int from = -halfSize;
@@ -1452,7 +1452,7 @@ class SelectionTest {
             Arrays.fill(zeros, quarterSize, halfSize + quarterSize, 0);
             for (final int k : new int[] {1, 2, 3, size}) {
                 for (int i = 0; i < 15; i++) {
-                    // Note: Duplicate indices do not matter
+
                     final int[] indices = rng.ints(k, 0, size).toArray();
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
@@ -1462,22 +1462,22 @@ class SelectionTest {
                         indices.clone()));
                 }
             }
-            // Test sequential processing by creating potential ranges
-            // after an initial low point. This should be high enough
-            // so any range analysis that joins indices will leave the initial
-            // index as a single point.
+
+
+
+
             final int limit = 50;
             if (size > limit) {
                 for (int i = 0; i < 10; i++) {
                     final int[] indices = rng.ints(size - limit, limit, size).toArray();
-                    // This sets a low index
+
                     indices[rng.nextInt(indices.length)] = rng.nextInt(0, limit >>> 1);
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
                         indices.clone()));
                 }
             }
-            // min; max; min/max
+
             builder.add(Arguments.of(values.clone(), new int[] {0}));
             builder.add(Arguments.of(values.clone(), new int[] {size - 1}));
             builder.add(Arguments.of(values.clone(), new int[] {0, size - 1}));
@@ -1495,33 +1495,33 @@ class SelectionTest {
         builder.add(Arguments.of(new int[] {value, 0, 1, 0, value}, new int[] {1, 3}));
         builder.add(Arguments.of(new int[] {value, 0, 0}, new int[] {0, 2}));
         builder.add(Arguments.of(new int[] {value, 123, 0, -456, 0, value}, new int[] {0, 1, 3}));
-        // Dual-pivot with a large middle region (> 5 / 8) requires equal elements loop
+
         final int n = 128;
         final int[] x = IntStream.range(0, n).toArray();
-        // Put equal elements in the central region:
-        //          2/16      6/16             10/16      14/16
-        // |  <P1    |    P1   |   P1< & < P2    |    P2    |    >P2    |
+
+
+
         final int sixteenth = n / 16;
         final int i2 = 2 * sixteenth;
         final int i6 = 6 * sixteenth;
         final int p1 = x[i2];
         final int p2 = x[n - i2];
-        // Lots of values equal to the pivots
+
         Arrays.fill(x, i2, i6, p1);
         Arrays.fill(x, n - i6, n - i2, p2);
-        // Equal value in between the pivots
+
         Arrays.fill(x, i6, n - i6, (p1 + p2) / 2);
-        // ArraySampler.shuffle this and partition in the middle.
-        // Also partition with the pivots in P1 and P2 using thirds.
+
+
         final int third = (int) (n / 3.0);
-        // Use a fix seed to ensure we hit coverage with only 5 loops.
+
         rng = RandomSource.XO_SHI_RO_128_PP.create(-8111061151820577011L);
         for (int i = 0; i < 5; i++) {
             builder.add(Arguments.of(ArraySampler.shuffle(rng, x.clone()), new int[] {n >> 1}));
             builder.add(Arguments.of(ArraySampler.shuffle(rng, x.clone()),
                 new int[] {third, 2 * third}));
         }
-        // A single value smaller/greater than the pivot at the left/right/both ends
+
         Arrays.fill(x, 1);
         for (int i = 0; i <= 2; i++) {
             for (int j = 0; j <= 2; j++) {
@@ -1530,7 +1530,7 @@ class SelectionTest {
                 builder.add(Arguments.of(x.clone(), new int[] {50}));
             }
         }
-        // Reverse data. Makes it simple to detect failed range selection.
+
         final int[] a = IntStream.range(0, 50).toArray();
         for (int i = -1, j = a.length; ++i < --j;) {
             final int v = a[i];
@@ -1549,10 +1549,10 @@ class SelectionTest {
     static Stream<Arguments> testIntPartitionBigData() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above the threshold (1200) for recursive partitioning
+
         for (final int size : new int[] {1000, 5000, 10000}) {
             final int[] a = IntStream.range(0, size).toArray();
-            // With repeat elements
+
             final int[] b = rng.ints(size, 0, size >> 3).toArray();
             for (int i = 0; i < 15; i++) {
                 builder.add(Arguments.of(
@@ -1562,13 +1562,13 @@ class SelectionTest {
                     new int[] {rng.nextInt(size)}));
             }
         }
-        // Hit Floyd-Rivest sub-sampling conditions.
-        // Close to edge but outside edge select size.
+
+
         final int n = 7000;
         final int[] x = IntStream.range(0, n).toArray();
         builder.add(Arguments.of(x.clone(), new int[] {20}));
         builder.add(Arguments.of(x.clone(), new int[] {n - 1 - 20}));
-        // Constant value when using FR partitioning
+
         Arrays.fill(x, 123);
         builder.add(Arguments.of(x, new int[] {x.length >>> 1}));
         return builder.build();
@@ -1603,33 +1603,33 @@ class SelectionTest {
 
     static Stream<Arguments> testIntExpandPartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
-        // Create data:
-        // |l          |start       |p0  p1|    end|            r|
-        // |     ???   |     <      |  ==  |   >   |     ???     |
-        // Arguments: data, start, end, pivot0, pivot1
 
-        // Create the data with unique values 42 and 0 either side of
-        // [start, end] (e.g. region ???). These are permuted for -1 and 10
-        // to create cases that may or not have to swap elements.
 
-        // Single pivot
+
+
+
+
+
+
+
+
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 3, 4, 0}, 1, 4, 2, 2);
-        // Pivot range
+
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 2, 3, 0}, 1, 4, 2, 3);
-        // Single pivot at start/end
+
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 3, 4, 0}, 1, 4, 1, 1);
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 3, 4, 0}, 1, 4, 4, 4);
-        // Pivot range at start/end
+
         addExpandPartitionArguments(builder, new int[] {42, 1, 1, 2, 3, 0}, 1, 4, 1, 2);
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 3, 3, 0}, 1, 4, 3, 4);
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 2, 2, 0}, 1, 4, 2, 4);
         addExpandPartitionArguments(builder, new int[] {42, 1, 1, 1, 2, 0}, 1, 4, 1, 3);
         addExpandPartitionArguments(builder, new int[] {42, 1, 1, 1, 1, 0}, 1, 4, 1, 4);
 
-        // Single pivot at left/right
+
         addExpandPartitionArguments(builder, new int[] {1, 2, 3, 4, 0}, 0, 3, 0, 0);
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 3, 4}, 1, 4, 4, 4);
-        // Pivot range at left/right
+
         addExpandPartitionArguments(builder, new int[] {1, 1, 2, 3, 4, 0}, 0, 4, 0, 1);
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 3, 4, 4}, 1, 5, 4, 5);
         addExpandPartitionArguments(builder, new int[] {1, 1, 1, 1, 2, 0}, 0, 4, 0, 3);
@@ -1637,7 +1637,7 @@ class SelectionTest {
         addExpandPartitionArguments(builder, new int[] {1, 1, 1, 1, 1, 0}, 0, 4, 0, 4);
         addExpandPartitionArguments(builder, new int[] {42, 4, 4, 4, 4, 4}, 1, 5, 1, 5);
 
-        // Minimum range: [start, end] == length 2
+
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 0}, 1, 2, 1, 1);
         addExpandPartitionArguments(builder, new int[] {42, 1, 2, 0}, 1, 2, 2, 2);
         addExpandPartitionArguments(builder, new int[] {42, 1, 1, 0}, 1, 2, 1, 2);
@@ -1686,7 +1686,7 @@ class SelectionTest {
         Assumptions.assumeTrue(values.length > 0);
         assertSort(values, x -> {
             final int right = x.length - 1;
-            // heapSelect is robust to right <= left
+
             QuickSelect.heapSelect(x, 0, right, 0, right);
         });
     }
@@ -1720,8 +1720,8 @@ class SelectionTest {
     @ParameterizedTest
     @MethodSource(value = {"testIntSort"})
     void testIntSortUsingSelection(int[] values) {
-        // This tests that the select function performs
-        // a full sort when the interval is saturated
+
+
         assertSort(values, a -> {
             final int right = a.length - 1;
             if (right < 1) {
@@ -1742,7 +1742,7 @@ class SelectionTest {
     static Stream<int[]> testIntSort() {
         final Stream.Builder<int[]> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning
+
         for (final int size : new int[] {5, 50}) {
             int[] a = new int[size];
             Arrays.fill(a, 123);
@@ -1784,71 +1784,71 @@ class SelectionTest {
         return builder.build();
     }
 
-    /**
-     * Partition function. Used to test different implementations.
-     */
+
+
+
     private interface LongRangePartitionFunction {
-        /**
-         * Partition the array such that range of indices {@code [ka, kb]} correspond to
-         * their correctly sorted value in the equivalent fully sorted array. For all
-         * indices {@code k} and any index {@code i}:
-         *
-         * <pre>{@code
-         * data[i < k] <= data[k] <= data[k < i]
-         * }</pre>
-         *
-         * @param a Data array to use to find out the K<sup>th</sup> value.
-         * @param left Lower bound (inclusive).
-         * @param right Upper bound (inclusive).
-         * @param ka Lower index to select.
-         * @param kb Upper index to select.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         void partition(long[] a, int left, int right, int ka, int kb);
     }
 
-    /**
-     * Partition function. Used to test different implementations.
-     */
+
+
+
     private interface LongPartitionFunction {
-        /**
-         * Partition the array such that indices {@code k} correspond to their correctly
-         * sorted value in the equivalent fully sorted array. For all indices {@code k}
-         * and any index {@code i}:
-         *
-         * <pre>{@code
-         * data[i < k] <= data[k] <= data[k < i]
-         * }</pre>
-         *
-         * <p>This method allows variable length indices using a count of the indices to
-         * process.
-         *
-         * @param a Values.
-         * @param k Indices.
-         * @param n Count of indices.
-         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         void partition(long[] a, int[] k, int n);
     }
 
-    /**
-     * Return a sorted copy of the {@code values}.
-     *
-     * @param values Values.
-     * @return the copy
-     */
+
+
+
+
+
+
     private static long[] sort(long[] values) {
         final long[] sorted = values.clone();
         Arrays.sort(sorted);
         return sorted;
     }
 
-    /**
-     * Return a copy of the {@code values} sorted in the range {@code [from, to]}.
-     *
-     * @param values Values.
-     * @param from From (inclusive).
-     * @param to To (inclusive).
-     * @return the copy
-     */
+
+
+
+
+
+
+
+
     private static long[] sort(long[] values, int from, int to) {
         final long[] sorted = values.clone();
         Arrays.sort(sorted, from, to + 1);
@@ -1866,11 +1866,11 @@ class SelectionTest {
         for (int k = from; k <= to; k++) {
             assertPartitionRange(sorted, fun, x.clone(), from, to, k, k);
             if (k > from) {
-                // Sort an extra 1
+
                 assertPartitionRange(sorted, fun, x.clone(), from, to, k - 1, k);
                 if (k > from + 1) {
-                    // Sort all
-                    // Test clipping with k < from
+
+
                     assertPartitionRange(sorted, fun, x.clone(), from, to, from - 23, k);
                 }
             }
@@ -1888,11 +1888,11 @@ class SelectionTest {
         for (int k = from; k <= to; k++) {
             assertPartitionRange(sorted, fun, x.clone(), from, to, k, k);
             if (k < to) {
-                // Sort an extra 1
+
                 assertPartitionRange(sorted, fun, x.clone(), from, to, k, k + 1);
                 if (k < to - 1) {
-                    // Sort all
-                    // Test clipping with k > to
+
+
                     assertPartitionRange(sorted, fun, x.clone(), from, to, k, to + 23);
                 }
             }
@@ -2027,30 +2027,30 @@ class SelectionTest {
             QuickSelect::sortSelect, values, from, to, k1, k2);
     }
 
-    /**
-     * Assert the function correctly partitions the range.
-     *
-     * @param sorted Expected sort result.
-     * @param fun Partition function.
-     * @param values Values.
-     * @param from From (inclusive).
-     * @param to To (inclusive).
-     * @param ka Lower index to select.
-     * @param kb Upper index to select.
-     */
+
+
+
+
+
+
+
+
+
+
+
     private static void assertPartitionRange(long[] sorted,
             LongRangePartitionFunction fun,
             long[] values, int from, int to, int ka, int kb) {
         Arrays.sort(sorted, from, to + 1);
         fun.partition(values, from, to, ka, kb);
-        // Clip
+
         ka = ka < from ? from : ka;
         kb = kb > to ? to : kb;
         for (int i = ka; i <= kb; i++) {
             final int index = i;
             Assertions.assertEquals(sorted[i], values[i], () -> "index: " + index);
         }
-        // Check the data is the same
+
         Arrays.sort(values, from, to + 1);
         Assertions.assertArrayEquals(sorted, values, "Data destroyed");
     }
@@ -2081,25 +2081,25 @@ class SelectionTest {
     static Stream<Arguments> testLongSelectThrows() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final long[] a = {1, 2, 3, -123, 0, -1};
-        // Invalid range
+
         builder.add(Arguments.of(a.clone(), new int[] {0}, 0, a.length + 1));
         builder.add(Arguments.of(a.clone(), new int[] {0}, -1, a.length));
         builder.add(Arguments.of(a.clone(), new int[] {0}, 0, 0));
         builder.add(Arguments.of(a.clone(), new int[] {0}, a.length, 0));
         builder.add(Arguments.of(a.clone(), new int[] {1}, 3, 1));
-        // Single k
-        // Full length
+
+
         builder.add(Arguments.of(a.clone(), new int[] {-1}, IGNORE_FROM, 0));
         builder.add(Arguments.of(a.clone(), new int[] {10}, IGNORE_FROM, 0));
-        // Range
+
         builder.add(Arguments.of(a.clone(), new int[] {-1}, 0, 5));
         builder.add(Arguments.of(a.clone(), new int[] {1}, 2, 5));
         builder.add(Arguments.of(a.clone(), new int[] {10}, 2, 5));
-        // Multiple k, some invalid
-        // Full length
+
+
         builder.add(Arguments.of(a.clone(), new int[] {0, -1, 1, 2}, IGNORE_FROM, 0));
         builder.add(Arguments.of(a.clone(), new int[] {0, 2, 3, 10}, IGNORE_FROM, 0));
-        // Range
+
         builder.add(Arguments.of(a.clone(), new int[] {0, -1, 1, 2}, 0, 5));
         builder.add(Arguments.of(a.clone(), new int[] {2, 3, 1}, 2, 5));
         builder.add(Arguments.of(a.clone(), new int[] {2, 10, 3}, 2, 5));
@@ -2189,7 +2189,7 @@ class SelectionTest {
         boolean sortedRange) {
         final long[] data = values.clone();
         final long[] sorted = sort(values);
-        // Indices may be destructively modified
+
         function.partition(data, indices.clone(), indices.length);
         if (indices.length == 0) {
             return;
@@ -2197,7 +2197,7 @@ class SelectionTest {
         for (final int k : indices) {
             Assertions.assertEquals(sorted[k], data[k], () -> "k[" + k + "]");
         }
-        // Check partial ordering
+
         Arrays.sort(indices);
         int i = 0;
         for (final int k : indices) {
@@ -2229,8 +2229,8 @@ class SelectionTest {
     static Stream<Arguments> testLongPartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning.
-        // The largest size should trigger single-pivot sub-sampling for pivot selection.
+
+
         for (final int size : new int[] {5, 47, SU + 10}) {
             final int halfSize = size >>> 1;
             final int from = -halfSize;
@@ -2241,7 +2241,7 @@ class SelectionTest {
             Arrays.fill(zeros, quarterSize, halfSize + quarterSize, 0);
             for (final int k : new int[] {1, 2, 3, size}) {
                 for (int i = 0; i < 15; i++) {
-                    // Note: Duplicate indices do not matter
+
                     final int[] indices = rng.ints(k, 0, size).toArray();
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
@@ -2251,22 +2251,22 @@ class SelectionTest {
                         indices.clone()));
                 }
             }
-            // Test sequential processing by creating potential ranges
-            // after an initial low point. This should be high enough
-            // so any range analysis that joins indices will leave the initial
-            // index as a single point.
+
+
+
+
             final int limit = 50;
             if (size > limit) {
                 for (int i = 0; i < 10; i++) {
                     final int[] indices = rng.ints(size - limit, limit, size).toArray();
-                    // This sets a low index
+
                     indices[rng.nextInt(indices.length)] = rng.nextInt(0, limit >>> 1);
                     builder.add(Arguments.of(
                         ArraySampler.shuffle(rng, values.clone()),
                         indices.clone()));
                 }
             }
-            // min; max; min/max
+
             builder.add(Arguments.of(values.clone(), new int[] {0}));
             builder.add(Arguments.of(values.clone(), new int[] {size - 1}));
             builder.add(Arguments.of(values.clone(), new int[] {0, size - 1}));
@@ -2284,33 +2284,33 @@ class SelectionTest {
         builder.add(Arguments.of(new long[] {value, 0, 1, 0, value}, new int[] {1, 3}));
         builder.add(Arguments.of(new long[] {value, 0, 0}, new int[] {0, 2}));
         builder.add(Arguments.of(new long[] {value, 123, 0, -456, 0, value}, new int[] {0, 1, 3}));
-        // Dual-pivot with a large middle region (> 5 / 8) requires equal elements loop
+
         final int n = 128;
         final long[] x = LongStream.range(0, n).toArray();
-        // Put equal elements in the central region:
-        //          2/16      6/16             10/16      14/16
-        // |  <P1    |    P1   |   P1< & < P2    |    P2    |    >P2    |
+
+
+
         final int sixteenth = n / 16;
         final int i2 = 2 * sixteenth;
         final int i6 = 6 * sixteenth;
         final long p1 = x[i2];
         final long p2 = x[n - i2];
-        // Lots of values equal to the pivots
+
         Arrays.fill(x, i2, i6, p1);
         Arrays.fill(x, n - i6, n - i2, p2);
-        // Equal value in between the pivots
+
         Arrays.fill(x, i6, n - i6, (p1 + p2) / 2);
-        // ArraySampler.shuffle this and partition in the middle.
-        // Also partition with the pivots in P1 and P2 using thirds.
+
+
         final int third = (int) (n / 3.0);
-        // Use a fix seed to ensure we hit coverage with only 5 loops.
+
         rng = RandomSource.XO_SHI_RO_128_PP.create(-8111061151820577011L);
         for (int i = 0; i < 5; i++) {
             builder.add(Arguments.of(ArraySampler.shuffle(rng, x.clone()), new int[] {n >> 1}));
             builder.add(Arguments.of(ArraySampler.shuffle(rng, x.clone()),
                 new int[] {third, 2 * third}));
         }
-        // A single value smaller/greater than the pivot at the left/right/both ends
+
         Arrays.fill(x, 1);
         for (int i = 0; i <= 2; i++) {
             for (int j = 0; j <= 2; j++) {
@@ -2319,7 +2319,7 @@ class SelectionTest {
                 builder.add(Arguments.of(x.clone(), new int[] {50}));
             }
         }
-        // Reverse data. Makes it simple to detect failed range selection.
+
         final long[] a = LongStream.range(0, 50).toArray();
         for (int i = -1, j = a.length; ++i < --j;) {
             final long v = a[i];
@@ -2338,10 +2338,10 @@ class SelectionTest {
     static Stream<Arguments> testLongPartitionBigData() {
         final Stream.Builder<Arguments> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above the threshold (1200) for recursive partitioning
+
         for (final int size : new int[] {1000, 5000, 10000}) {
             final long[] a = LongStream.range(0, size).toArray();
-            // With repeat elements
+
             final long[] b = rng.longs(size, 0, size >> 3).toArray();
             for (int i = 0; i < 15; i++) {
                 builder.add(Arguments.of(
@@ -2351,13 +2351,13 @@ class SelectionTest {
                     new int[] {rng.nextInt(size)}));
             }
         }
-        // Hit Floyd-Rivest sub-sampling conditions.
-        // Close to edge but outside edge select size.
+
+
         final int n = 7000;
         final long[] x = LongStream.range(0, n).toArray();
         builder.add(Arguments.of(x.clone(), new int[] {20}));
         builder.add(Arguments.of(x.clone(), new int[] {n - 1 - 20}));
-        // Constant value when using FR partitioning
+
         Arrays.fill(x, 123);
         builder.add(Arguments.of(x, new int[] {x.length >>> 1}));
         return builder.build();
@@ -2392,33 +2392,33 @@ class SelectionTest {
 
     static Stream<Arguments> testLongExpandPartition() {
         final Stream.Builder<Arguments> builder = Stream.builder();
-        // Create data:
-        // |l          |start       |p0  p1|    end|            r|
-        // |     ???   |     <      |  ==  |   >   |     ???     |
-        // Arguments: data, start, end, pivot0, pivot1
 
-        // Create the data with unique values 42 and 0 either side of
-        // [start, end] (e.g. region ???). These are permuted for -1 and 10
-        // to create cases that may or not have to swap elements.
 
-        // Single pivot
+
+
+
+
+
+
+
+
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 3, 4, 0}, 1, 4, 2, 2);
-        // Pivot range
+
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 2, 3, 0}, 1, 4, 2, 3);
-        // Single pivot at start/end
+
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 3, 4, 0}, 1, 4, 1, 1);
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 3, 4, 0}, 1, 4, 4, 4);
-        // Pivot range at start/end
+
         addExpandPartitionArguments(builder, new long[] {42, 1, 1, 2, 3, 0}, 1, 4, 1, 2);
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 3, 3, 0}, 1, 4, 3, 4);
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 2, 2, 0}, 1, 4, 2, 4);
         addExpandPartitionArguments(builder, new long[] {42, 1, 1, 1, 2, 0}, 1, 4, 1, 3);
         addExpandPartitionArguments(builder, new long[] {42, 1, 1, 1, 1, 0}, 1, 4, 1, 4);
 
-        // Single pivot at left/right
+
         addExpandPartitionArguments(builder, new long[] {1, 2, 3, 4, 0}, 0, 3, 0, 0);
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 3, 4}, 1, 4, 4, 4);
-        // Pivot range at left/right
+
         addExpandPartitionArguments(builder, new long[] {1, 1, 2, 3, 4, 0}, 0, 4, 0, 1);
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 3, 4, 4}, 1, 5, 4, 5);
         addExpandPartitionArguments(builder, new long[] {1, 1, 1, 1, 2, 0}, 0, 4, 0, 3);
@@ -2426,7 +2426,7 @@ class SelectionTest {
         addExpandPartitionArguments(builder, new long[] {1, 1, 1, 1, 1, 0}, 0, 4, 0, 4);
         addExpandPartitionArguments(builder, new long[] {42, 4, 4, 4, 4, 4}, 1, 5, 1, 5);
 
-        // Minimum range: [start, end] == length 2
+
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 0}, 1, 2, 1, 1);
         addExpandPartitionArguments(builder, new long[] {42, 1, 2, 0}, 1, 2, 2, 2);
         addExpandPartitionArguments(builder, new long[] {42, 1, 1, 0}, 1, 2, 1, 2);
@@ -2475,7 +2475,7 @@ class SelectionTest {
         Assumptions.assumeTrue(values.length > 0);
         assertSort(values, x -> {
             final int right = x.length - 1;
-            // heapSelect is robust to right <= left
+
             QuickSelect.heapSelect(x, 0, right, 0, right);
         });
     }
@@ -2509,8 +2509,8 @@ class SelectionTest {
     @ParameterizedTest
     @MethodSource(value = {"testLongSort"})
     void testLongSortUsingSelection(long[] values) {
-        // This tests that the select function performs
-        // a full sort when the interval is saturated
+
+
         assertSort(values, a -> {
             final int right = a.length - 1;
             if (right < 1) {
@@ -2531,7 +2531,7 @@ class SelectionTest {
     static Stream<long[]> testLongSort() {
         final Stream.Builder<long[]> builder = Stream.builder();
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create(123);
-        // Sizes above and below the threshold for partitioning
+
         for (final int size : new int[] {5, 50}) {
             long[] a = new long[size];
             Arrays.fill(a, 123);
@@ -2575,7 +2575,7 @@ class SelectionTest {
 
     @Test
     void testDualPivotMaxDepth() {
-        // Reasonable behaviour at small x
+
         Assertions.assertEquals(0, log3(0));
         Assertions.assertEquals(0, log3(1));
         Assertions.assertEquals(1, log3(2));
@@ -2585,9 +2585,9 @@ class SelectionTest {
         Assertions.assertEquals(1, log3(6));
         Assertions.assertEquals(1, log3(7));
         Assertions.assertEquals(2, log3(8));
-        // log3(2^31-1) = 19.5588223...
+
         Assertions.assertEquals(19, log3(Integer.MAX_VALUE));
-        // Create a series of powers of 3, start at 3^2
+
         long p = 3;
         for (int i = 2;; i++) {
             p *= 3;
@@ -2595,25 +2595,25 @@ class SelectionTest {
                 break;
             }
             final int x = (int) p;
-            // Computes round(log3(x)) when x is close to a power of 3
+
             Assertions.assertEquals(i, log3(x - 1));
             Assertions.assertEquals(i, log3(x));
             Assertions.assertEquals(i, log3(x + 1));
-            // Half-way point is within the bracket [i, i+1]
+
             final int y = (int) Math.floor(Math.pow(3, i + 0.5));
             Assertions.assertTrue(log3(y) >= i);
             Assertions.assertTrue(log3(y + 1) <= i + 1);
         }
     }
 
-    /**
-     * Compute an approximation to log3(x).
-     *
-     * @param x Value
-     * @return log3(x)
-     */
+
+
+
+
+
+
     private static int log3(int x) {
-        // Use half of the dual-pivot max recursion depth
+
         return QuickSelect.dualPivotMaxDepth(x) >>> 1;
     }
 }

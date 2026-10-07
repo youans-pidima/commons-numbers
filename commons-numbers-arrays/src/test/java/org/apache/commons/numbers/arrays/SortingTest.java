@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.arrays;
 
@@ -32,28 +32,28 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link Sorting}.
- *
- * <p>Sorting tests for floating point values do not include NaN or signed zero (-0.0).
- */
+
+
+
+
+
 class SortingTest {
 
-    /**
-     * Interface to test sorting of indices.
-§     */
+
+
+
     interface IndexSort {
-        /**
-         * Sort the indices into unique ascending order.
-         *
-         * @param a Indices.
-         * @param n Number of indices.
-         * @return number of unique indices.
-         */
+
+
+
+
+
+
+
         int insertionSortIndices(int[] a, int n);
     }
 
-    // double[]
+
 
     @ParameterizedTest
     @MethodSource(value = {"testDoubleSort"})
@@ -95,13 +95,13 @@ class SortingTest {
         assertSortInternal(values, x -> Sorting.sort5(x, a, b, c, d, e), indices);
     }
 
-    /**
-     * Assert that the sort {@code function} computes the same result as
-     * {@link Arrays#sort(double[])}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     */
+
+
+
+
+
+
+
     private static void assertSort(double[] values, Consumer<double[]> function) {
         final double[] expected = values.clone();
         Arrays.sort(expected);
@@ -110,25 +110,25 @@ class SortingTest {
         Assertions.assertArrayEquals(expected, actual, "Invalid sort");
     }
 
-    /**
-     * Assert that the sort {@code function} computes the same result as
-     * {@link Arrays#sort(double[])} run on the provided {@code indices}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     * @param indices Indices.
-     */
+
+
+
+
+
+
+
+
     private static void assertSortInternal(double[] values, Consumer<double[]> function, int... indices) {
         Assertions.assertFalse(containsDuplicates(indices), () -> "Duplicate indices: " + Arrays.toString(indices));
-        // Pick out the data to sort
+
         final double[] expected = extractIndices(values, indices);
         Arrays.sort(expected);
         final double[] data = values.clone();
         function.accept(data);
-        // Pick out the data that was sorted
+
         final double[] actual = extractIndices(data, indices);
         Assertions.assertArrayEquals(expected, actual, "Invalid sort");
-        // Check outside the sorted indices
+
         OUTSIDE: for (int i = 0; i < values.length; i++) {
             for (final int ignore : indices) {
                 if (i == ignore) {
@@ -162,7 +162,7 @@ class SortingTest {
     }
 
     static Stream<double[]> testDoubleSort3() {
-        // Permutations is 3! = 6
+
         final double x = 3.35;
         final double y = 12.3;
         final double z = -9.99;
@@ -180,7 +180,7 @@ class SortingTest {
     static Stream<double[]> testDoubleSort5() {
         final Stream.Builder<double[]> builder = Stream.builder();
         final double[] a = new double[5];
-        // Permutations is 5! = 120
+
         final int shift = 42;
         for (int i = 0; i < 5; i++) {
             a[0] = i + shift;
@@ -264,7 +264,7 @@ class SortingTest {
     @ParameterizedTest
     @MethodSource(value = {"testDoubleSort4"})
     void testDoubleLowerMedian4(double[] a) {
-        // This method computes in place
+
         assertMedian(a, x -> {
             Sorting.lowerMedian4(x, 0, 1, 2, 3);
             return 1;
@@ -274,33 +274,33 @@ class SortingTest {
     @ParameterizedTest
     @MethodSource(value = {"testDoubleSort4"})
     void testDoubleUpperMedian4(double[] a) {
-        // This method computes in place
+
         assertMedian(a, x -> {
             Sorting.upperMedian4(x, 0, 1, 2, 3);
             return 2;
         }, false, true, 0, 1, 2, 3);
     }
 
-    /**
-     * Assert that the median {@code function} computes the same result as
-     * {@link Arrays#sort(double[])} run on the provided {@code indices}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     * @param lower For even lengths use the lower median; else the upper median.
-     * @param stable If true then no swaps should be made on the second pass.
-     * @param indices Indices.
-     */
+
+
+
+
+
+
+
+
+
+
     private static void assertMedian(double[] values, ToIntFunction<double[]> function,
         boolean lower, boolean stable, int... indices) {
         Assertions.assertFalse(containsDuplicates(indices), () -> "Duplicate indices: " + Arrays.toString(indices));
-        // Pick out the data to sort
+
         final double[] expected = extractIndices(values, indices);
         Arrays.sort(expected);
         final double[] data = values.clone();
         final int m = function.applyAsInt(data);
         Assertions.assertEquals(expected[(lower ? -1 : 0) + (expected.length >>> 1)], data[m]);
-        // Check outside the sorted indices
+
         OUTSIDE: for (int i = 0; i < values.length; i++) {
             for (final int ignore : indices) {
                 if (i == ignore) {
@@ -309,7 +309,7 @@ class SortingTest {
             }
             Assertions.assertEquals(values[i], data[i]);
         }
-        // This is not a strict requirement but check that no swaps occur on a second pass
+
         if (stable) {
             final double[] x = data.clone();
             final int m2 = function.applyAsInt(data);
@@ -322,7 +322,7 @@ class SortingTest {
     static Stream<double[]> testDoubleSort4() {
         final Stream.Builder<double[]> builder = Stream.builder();
         final double[] a = new double[4];
-        // Permutations is 4! = 24
+
         final int shift = 42;
         for (int i = 0; i < 4; i++) {
             a[0] = i + shift;
@@ -372,7 +372,7 @@ class SortingTest {
         return data;
     }
 
-    // int[]
+
 
     @ParameterizedTest
     @MethodSource(value = {"testIntSort"})
@@ -414,13 +414,13 @@ class SortingTest {
         assertSortInternal(values, x -> Sorting.sort5(x, a, b, c, d, e), indices);
     }
 
-    /**
-     * Assert that the sort {@code function} computes the same result as
-     * {@link Arrays#sort(int[])}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     */
+
+
+
+
+
+
+
     private static void assertSort(int[] values, Consumer<int[]> function) {
         final int[] expected = values.clone();
         Arrays.sort(expected);
@@ -429,25 +429,25 @@ class SortingTest {
         Assertions.assertArrayEquals(expected, actual, "Invalid sort");
     }
 
-    /**
-     * Assert that the sort {@code function} computes the same result as
-     * {@link Arrays#sort(int[])} run on the provided {@code indices}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     * @param indices Indices.
-     */
+
+
+
+
+
+
+
+
     private static void assertSortInternal(int[] values, Consumer<int[]> function, int... indices) {
         Assertions.assertFalse(containsDuplicates(indices), () -> "Duplicate indices: " + Arrays.toString(indices));
-        // Pick out the data to sort
+
         final int[] expected = extractIndices(values, indices);
         Arrays.sort(expected);
         final int[] data = values.clone();
         function.accept(data);
-        // Pick out the data that was sorted
+
         final int[] actual = extractIndices(data, indices);
         Assertions.assertArrayEquals(expected, actual, "Invalid sort");
-        // Check outside the sorted indices
+
         OUTSIDE: for (int i = 0; i < values.length; i++) {
             for (final int ignore : indices) {
                 if (i == ignore) {
@@ -481,7 +481,7 @@ class SortingTest {
     }
 
     static Stream<int[]> testIntSort3() {
-        // Permutations is 3! = 6
+
         final int x = 335;
         final int y = 123;
         final int z = -999;
@@ -499,7 +499,7 @@ class SortingTest {
     static Stream<int[]> testIntSort5() {
         final Stream.Builder<int[]> builder = Stream.builder();
         final int[] a = new int[5];
-        // Permutations is 5! = 120
+
         final int shift = 42;
         for (int i = 0; i < 5; i++) {
             a[0] = i + shift;
@@ -583,7 +583,7 @@ class SortingTest {
     @ParameterizedTest
     @MethodSource(value = {"testIntSort4"})
     void testIntLowerMedian4(int[] a) {
-        // This method computes in place
+
         assertMedian(a, x -> {
             Sorting.lowerMedian4(x, 0, 1, 2, 3);
             return 1;
@@ -593,33 +593,33 @@ class SortingTest {
     @ParameterizedTest
     @MethodSource(value = {"testIntSort4"})
     void testIntUpperMedian4(int[] a) {
-        // This method computes in place
+
         assertMedian(a, x -> {
             Sorting.upperMedian4(x, 0, 1, 2, 3);
             return 2;
         }, false, true, 0, 1, 2, 3);
     }
 
-    /**
-     * Assert that the median {@code function} computes the same result as
-     * {@link Arrays#sort(int[])} run on the provided {@code indices}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     * @param lower For even lengths use the lower median; else the upper median.
-     * @param stable If true then no swaps should be made on the second pass.
-     * @param indices Indices.
-     */
+
+
+
+
+
+
+
+
+
+
     private static void assertMedian(int[] values, ToIntFunction<int[]> function,
         boolean lower, boolean stable, int... indices) {
         Assertions.assertFalse(containsDuplicates(indices), () -> "Duplicate indices: " + Arrays.toString(indices));
-        // Pick out the data to sort
+
         final int[] expected = extractIndices(values, indices);
         Arrays.sort(expected);
         final int[] data = values.clone();
         final int m = function.applyAsInt(data);
         Assertions.assertEquals(expected[(lower ? -1 : 0) + (expected.length >>> 1)], data[m]);
-        // Check outside the sorted indices
+
         OUTSIDE: for (int i = 0; i < values.length; i++) {
             for (final int ignore : indices) {
                 if (i == ignore) {
@@ -628,7 +628,7 @@ class SortingTest {
             }
             Assertions.assertEquals(values[i], data[i]);
         }
-        // This is not a strict requirement but check that no swaps occur on a second pass
+
         if (stable) {
             final int[] x = data.clone();
             final int m2 = function.applyAsInt(data);
@@ -641,7 +641,7 @@ class SortingTest {
     static Stream<int[]> testIntSort4() {
         final Stream.Builder<int[]> builder = Stream.builder();
         final int[] a = new int[4];
-        // Permutations is 4! = 24
+
         final int shift = 42;
         for (int i = 0; i < 4; i++) {
             a[0] = i + shift;
@@ -691,7 +691,7 @@ class SortingTest {
         return data;
     }
 
-    // long[]
+
 
     @ParameterizedTest
     @MethodSource(value = {"testLongSort"})
@@ -733,13 +733,13 @@ class SortingTest {
         assertSortInternal(values, x -> Sorting.sort5(x, a, b, c, d, e), indices);
     }
 
-    /**
-     * Assert that the sort {@code function} computes the same result as
-     * {@link Arrays#sort(long[])}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     */
+
+
+
+
+
+
+
     private static void assertSort(long[] values, Consumer<long[]> function) {
         final long[] expected = values.clone();
         Arrays.sort(expected);
@@ -748,25 +748,25 @@ class SortingTest {
         Assertions.assertArrayEquals(expected, actual, "Invalid sort");
     }
 
-    /**
-     * Assert that the sort {@code function} computes the same result as
-     * {@link Arrays#sort(long[])} run on the provided {@code indices}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     * @param indices Indices.
-     */
+
+
+
+
+
+
+
+
     private static void assertSortInternal(long[] values, Consumer<long[]> function, int... indices) {
         Assertions.assertFalse(containsDuplicates(indices), () -> "Duplicate indices: " + Arrays.toString(indices));
-        // Pick out the data to sort
+
         final long[] expected = extractIndices(values, indices);
         Arrays.sort(expected);
         final long[] data = values.clone();
         function.accept(data);
-        // Pick out the data that was sorted
+
         final long[] actual = extractIndices(data, indices);
         Assertions.assertArrayEquals(expected, actual, "Invalid sort");
-        // Check outside the sorted indices
+
         OUTSIDE: for (int i = 0; i < values.length; i++) {
             for (final int ignore : indices) {
                 if (i == ignore) {
@@ -800,7 +800,7 @@ class SortingTest {
     }
 
     static Stream<long[]> testLongSort3() {
-        // Permutations is 3! = 6
+
         final long x = 335;
         final long y = 123;
         final long z = -999;
@@ -818,7 +818,7 @@ class SortingTest {
     static Stream<long[]> testLongSort5() {
         final Stream.Builder<long[]> builder = Stream.builder();
         final long[] a = new long[5];
-        // Permutations is 5! = 120
+
         final int shift = 42;
         for (int i = 0; i < 5; i++) {
             a[0] = i + shift;
@@ -902,7 +902,7 @@ class SortingTest {
     @ParameterizedTest
     @MethodSource(value = {"testLongSort4"})
     void testLongLowerMedian4(long[] a) {
-        // This method computes in place
+
         assertMedian(a, x -> {
             Sorting.lowerMedian4(x, 0, 1, 2, 3);
             return 1;
@@ -912,33 +912,33 @@ class SortingTest {
     @ParameterizedTest
     @MethodSource(value = {"testLongSort4"})
     void testLongUpperMedian4(long[] a) {
-        // This method computes in place
+
         assertMedian(a, x -> {
             Sorting.upperMedian4(x, 0, 1, 2, 3);
             return 2;
         }, false, true, 0, 1, 2, 3);
     }
 
-    /**
-     * Assert that the median {@code function} computes the same result as
-     * {@link Arrays#sort(long[])} run on the provided {@code indices}.
-     *
-     * @param values Data.
-     * @param function Sort function.
-     * @param lower For even lengths use the lower median; else the upper median.
-     * @param stable If true then no swaps should be made on the second pass.
-     * @param indices Indices.
-     */
+
+
+
+
+
+
+
+
+
+
     private static void assertMedian(long[] values, ToIntFunction<long[]> function,
         boolean lower, boolean stable, int... indices) {
         Assertions.assertFalse(containsDuplicates(indices), () -> "Duplicate indices: " + Arrays.toString(indices));
-        // Pick out the data to sort
+
         final long[] expected = extractIndices(values, indices);
         Arrays.sort(expected);
         final long[] data = values.clone();
         final int m = function.applyAsInt(data);
         Assertions.assertEquals(expected[(lower ? -1 : 0) + (expected.length >>> 1)], data[m]);
-        // Check outside the sorted indices
+
         OUTSIDE: for (int i = 0; i < values.length; i++) {
             for (final int ignore : indices) {
                 if (i == ignore) {
@@ -947,7 +947,7 @@ class SortingTest {
             }
             Assertions.assertEquals(values[i], data[i]);
         }
-        // This is not a strict requirement but check that no swaps occur on a second pass
+
         if (stable) {
             final long[] x = data.clone();
             final int m2 = function.applyAsInt(data);
@@ -960,7 +960,7 @@ class SortingTest {
     static Stream<long[]> testLongSort4() {
         final Stream.Builder<long[]> builder = Stream.builder();
         final long[] a = new long[4];
-        // Permutations is 4! = 24
+
         final int shift = 42;
         for (int i = 0; i < 4; i++) {
             a[0] = i + shift;
@@ -1010,7 +1010,7 @@ class SortingTest {
         return data;
     }
 
-    // Sorting unique indices
+
 
     @ParameterizedTest
     @MethodSource(value = {"testSortIndices"})
@@ -1025,7 +1025,7 @@ class SortingTest {
     }
 
     private static void assertSortIndices(IndexSort fun, int[] values, int n, int minSupportedLength) {
-        // Negative n is a signal to use the full length
+
         n = n < 0 ? values.length : n;
         Assumptions.assumeTrue(n >= minSupportedLength);
         final int[] x = values.clone();
@@ -1037,23 +1037,23 @@ class SortingTest {
             final int index = i;
             Assertions.assertEquals(expected[i], x[i], () -> "Error @ " + index);
         }
-        // Test values after unique should be in the entire original data
+
         final BitSet set = new BitSet();
         Arrays.stream(values).limit(n).forEach(set::set);
         for (int i = expected.length; i < n; i++) {
             Assertions.assertTrue(set.get(x[i]), "Data up to n destroyed");
         }
-        // Data after n should be untouched
+
         for (int i = n; i < values.length; i++) {
             Assertions.assertEquals(values[i], x[i], "Data after n destroyed");
         }
     }
 
     static Stream<Arguments> testSortIndices() {
-        // Create data that should exercise all strategies in the heuristics in
-        // Sorting::sortIndices used to choose a sorting method
+
+
         final Stream.Builder<Arguments> builder = Stream.builder();
-        // Use length -1 to use the array length
+
         builder.add(Arguments.of(new int[0], -1));
         builder.add(Arguments.of(new int[3], -1));
         builder.add(Arguments.of(new int[3], -1));
@@ -1061,11 +1061,11 @@ class SortingTest {
         builder.add(Arguments.of(new int[] {1, 2, 3}, -1));
         builder.add(Arguments.of(new int[] {3, 2, 1}, -1));
         builder.add(Arguments.of(new int[] {42, 5, 7}, -1));
-        // Duplicates
+
         builder.add(Arguments.of(new int[] {1, 1}, -1));
         builder.add(Arguments.of(new int[] {1, 1, 1}, -1));
         builder.add(Arguments.of(new int[] {42, 5, 2, 9, 2, 9, 7, 7, 4}, -1));
-        // Truncated indices
+
         builder.add(Arguments.of(new int[] {3, 2, 1}, 1));
         builder.add(Arguments.of(new int[] {3, 2, 1}, 2));
         builder.add(Arguments.of(new int[] {2, 2, 1}, 2));
@@ -1073,7 +1073,7 @@ class SortingTest {
         builder.add(Arguments.of(new int[] {5, 4, 3, 2, 1}, 3));
         builder.add(Arguments.of(new int[] {1, 2, 3, 4, 5}, 3));
         builder.add(Arguments.of(new int[] {5, 3, 1, 2, 4}, 3));
-        // Some random indices with duplicates
+
         final UniformRandomProvider rng = RandomSource.XO_SHI_RO_128_PP.create();
         for (final int size : new int[] {5, 10, 30}) {
             final int maxIndex = size >>> 1;
@@ -1081,15 +1081,15 @@ class SortingTest {
                 builder.add(Arguments.of(rng.ints(size, 0, maxIndex).toArray(), -1));
             }
         }
-        // A lot of duplicates
+
         builder.add(Arguments.of(rng.ints(50, 0, 3).toArray(), -1));
         builder.add(Arguments.of(rng.ints(50, 0, 5).toArray(), -1));
         builder.add(Arguments.of(rng.ints(50, 0, 10).toArray(), -1));
-        // Bug where the first index was ignored when using an IndexSet
+
         builder.add(Arguments.of(IntStream.range(0, 50).map(x -> 50 - x).toArray(), -1));
-        // Sparse
+
         builder.add(Arguments.of(rng.ints(25, 0, 100000).toArray(), -1));
-        // Ascending
+
         builder.add(Arguments.of(IntStream.range(99, 134).toArray(), -1));
         builder.add(Arguments.of(IntStream.range(99, 134).map(x -> x * 2).toArray(), -1));
         builder.add(Arguments.of(IntStream.range(99, 134).map(x -> x * 3).toArray(), -1));

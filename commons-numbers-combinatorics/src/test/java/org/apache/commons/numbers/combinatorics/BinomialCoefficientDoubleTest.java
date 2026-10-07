@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.combinatorics;
 
 import java.math.BigInteger;
@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/**
- * Test cases for the {@link BinomialCoefficientDouble} class.
- */
+
+
+
 class BinomialCoefficientDoubleTest {
     @ParameterizedTest
     @CsvSource({
@@ -42,8 +42,8 @@ class BinomialCoefficientDoubleTest {
 
     @ParameterizedTest
     @CsvSource({
-        // Data verified using maxima: bfloat(binomial(n, k)) using 30 digits of precision.
-        // Note: This test will correctly assert infinite expected values.
+
+
         "0, 0, 1, 0",
         "5, 0, 1, 0",
         "5, 1, 5, 0",
@@ -62,12 +62,12 @@ class BinomialCoefficientDoubleTest {
         "412, 9, 863177604710689620, 0",
         "678, 7, 12667255449994080, 0",
         "66, 33, 7219428434016265740, 0",
-        // Overflow as a long
+
         "67, 30, 9989690752182277136, 1",
         "67, 33, 14226520737620288370, 0",
         "68, 34, 28453041475240576740, 0",
-        // Overflow without special handling
-        // See NUMBERS-183
+
+
         "1040, 450, 2.3101613255412135615e307, 11",
         "1029, 514, 1.4298206864989040819e308, 5",
         "1786388282, 38, 7.187239013254065384599502085053593e306, 0",
@@ -100,13 +100,13 @@ class BinomialCoefficientDoubleTest {
             () -> n + " choose " + k);
     }
 
-    /**
-     * Tests correctness for large n and sharpness of upper bound in API doc.
-     * JIRA: MATH-241
-     */
+
+
+
+
     @Test
     void testBinomialCoefficientLarge() {
-        // This tests all values for n <= 200.
+
         final int size = 200;
         final BigInteger[] factorials = new BigInteger[size + 1];
         factorials[0] = BigInteger.ONE;
@@ -143,7 +143,7 @@ class BinomialCoefficientDoubleTest {
                     expected, actual,
                     Double.doubleToRawLongBits(actual) - Double.doubleToRawLongBits(expected)));
         }
-        // Test symmetry
+
         Assertions.assertEquals(actual, BinomialCoefficientDouble.value(n, n - k), () -> n + " choose " + k);
     }
 }

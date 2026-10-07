@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.rootfinder;
 
 import java.time.Duration;
@@ -23,9 +23,9 @@ import java.util.function.DoubleUnaryOperator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Test cases for the {@link BrentSolver} class.
- */
+
+
+
 class BrentSolverTest {
     private static final double DEFAULT_ABSOLUTE_ACCURACY = 1e-6;
     private static final double DEFAULT_RELATIVE_ACCURACY = 1e-14;
@@ -33,10 +33,10 @@ class BrentSolverTest {
 
     @Test
     void testInvalidAccuracies() {
-        // The accuracies feed the convergence tolerance 2 * eps * abs(b) + t.
-        // A NaN accuracy makes every loop exit criterion false (an infinite
-        // loop); negative and infinite accuracies are meaningless. All must
-        // be rejected at construction.
+
+
+
+
         for (final double bad : new double[] {Double.NaN, -1, -Double.MIN_VALUE,
             Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY}) {
             Assertions.assertThrows(IllegalArgumentException.class,
@@ -49,7 +49,7 @@ class BrentSolverTest {
                 () -> new BrentSolver(DEFAULT_RELATIVE_ACCURACY, DEFAULT_ABSOLUTE_ACCURACY, bad),
                 () -> "function value accuracy: " + bad);
         }
-        // Zero accuracies remain supported (see testSubNormalBracket, NUMBERS-168).
+
         Assertions.assertDoesNotThrow(() -> new BrentSolver(0, 0, 0));
     }
 
@@ -69,10 +69,10 @@ class BrentSolverTest {
 
     @Test
     void testNaNFunctionValue() {
-        // A function with a NaN "hole" strictly inside the bracket, e.g. from
-        // sqrt/log of an out-of-domain sub-expression. The solver must fail
-        // fast instead of degrading to a tolerance-sized step per evaluation
-        // (and possibly returning a point where the function value is NaN).
+
+
+
+
         final DoubleUnaryOperator f = x -> {
             if (x < 0.1) {
                 return -1;
@@ -88,9 +88,9 @@ class BrentSolverTest {
 
     @Test
     void testSinZero() {
-        // The sinus function is behaved well around the root at pi. The second
-        // order derivative is zero, which means linar approximating methods will
-        // still converge quadratically.
+
+
+
         final DoubleUnaryOperator func = new Sin();
         final BrentSolver solver = new BrentSolver(DEFAULT_RELATIVE_ACCURACY,
                                                    DEFAULT_ABSOLUTE_ACCURACY,
@@ -99,13 +99,13 @@ class BrentSolverTest {
         double result;
         MonitoredFunction f;
 
-        // Somewhat benign interval. The function is monotonous.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 3, 4);
         Assertions.assertEquals(Math.PI, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 7);
 
-        // Larger and somewhat less benign interval. The function is grows first.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 1, 4);
         Assertions.assertEquals(Math.PI, result, DEFAULT_ABSOLUTE_ACCURACY);
@@ -114,13 +114,13 @@ class BrentSolverTest {
 
     @Test
     void testQuinticZero() {
-        // The quintic function has zeros at 0, +-0.5 and +-1.
-        // Around the root of 0 the function is well behaved, with a second derivative
-        // of zero a 0.
-        // The other roots are less well to find, in particular the root at 1, because
-        // the function grows fast for x>1.
-        // The function has extrema (first derivative is zero) at 0.27195613 and 0.82221643,
-        // intervals containing these values are harder for the solvers.
+
+
+
+
+
+
+
         final DoubleUnaryOperator func = new QuinticFunction();
         final BrentSolver solver = new BrentSolver(DEFAULT_RELATIVE_ACCURACY,
                                                    DEFAULT_ABSOLUTE_ACCURACY,
@@ -129,67 +129,67 @@ class BrentSolverTest {
         double result;
         MonitoredFunction f;
 
-        // Symmetric bracket around 0. Test whether solvers can handle hitting
-        // the root in the first iteration.
+
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, -0.2, 0.2);
         Assertions.assertEquals(0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 3);
 
-        // 1 iterations on i586 JDK 1.4.1.
-        // Asymmetric bracket around 0. Contains extremum.
+
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, -0.1, 0.3);
         Assertions.assertEquals(0, result, DEFAULT_ABSOLUTE_ACCURACY);
-        // 5 iterations on i586 JDK 1.4.1.
+
         Assertions.assertTrue(f.getCallsCount() <= 7);
 
-        // Large bracket around 0. Contains two extrema.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, -0.3, 0.45);
         Assertions.assertEquals(0, result, DEFAULT_ABSOLUTE_ACCURACY);
-        // 6 iterations on i586 JDK 1.4.1.
+
         Assertions.assertTrue(f.getCallsCount() <= 8);
 
-        // Benign bracket around 0.5, function is monotonous.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.3, 0.7);
         Assertions.assertEquals(0.5, result, DEFAULT_ABSOLUTE_ACCURACY);
-        // 6 iterations on i586 JDK 1.4.1.
+
         Assertions.assertTrue(f.getCallsCount() <= 9);
 
-        // Less benign bracket around 0.5, contains one extremum.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.2, 0.6);
         Assertions.assertEquals(0.5, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 10);
 
-        // Large, less benign bracket around 0.5, contains both extrema.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.05, 0.95);
         Assertions.assertEquals(0.5, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 11);
 
-        // Relatively benign bracket around 1, function is monotonous. Fast growth for x>1
-        // is still a problem.
+
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.85, 1.25);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 11);
 
-        // Less benign bracket around 1 with extremum.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.8, 1.2);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 11);
 
-        // Large bracket around 1. Monotonous.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.85, 1.75);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() <= 13);
 
-        // Large bracket around 1. Interval contains extremum.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.55, 1.45);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
@@ -203,7 +203,7 @@ class BrentSolverTest {
                                                    DEFAULT_ABSOLUTE_ACCURACY,
                                                    DEFAULT_FUNCTION_ACCURACY);
 
-        // Very large bracket around 1 for testing fast growth behavior.
+
         final MonitoredFunction f = new MonitoredFunction(func);
         final double result = solver.findRoot(f, 0.85, 5);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
@@ -212,7 +212,7 @@ class BrentSolverTest {
         final MonitoredFunction f2 = new MonitoredFunction(func, 10);
         final IllegalStateException ex = Assertions.assertThrows(IllegalStateException.class,
             () -> solver.findRoot(f2, 0.85, 5), "Expected too many calls condition");
-        // Ensure expected error condition.
+
         Assertions.assertNotEquals(-1, ex.getMessage().indexOf("too many calls"));
     }
 
@@ -223,7 +223,7 @@ class BrentSolverTest {
                                                    DEFAULT_ABSOLUTE_ACCURACY,
                                                    DEFAULT_FUNCTION_ACCURACY);
 
-        // Endpoint is root.
+
         double result = solver.findRoot(f, Math.PI, 4);
         Assertions.assertEquals(Math.PI, result, DEFAULT_ABSOLUTE_ACCURACY);
 
@@ -245,12 +245,12 @@ class BrentSolverTest {
                                                    DEFAULT_FUNCTION_ACCURACY);
         SolverException ex;
 
-        // Bad interval
+
         ex = Assertions.assertThrows(SolverException.class,
             () -> solver.findRoot(f, 1, -1));
         Assertions.assertNotEquals(-1, ex.getMessage().indexOf(" > "));
 
-        // No bracketing
+
         ex = Assertions.assertThrows(SolverException.class,
             () -> solver.findRoot(f, 1, 1.5));
         Assertions.assertNotEquals(-1, ex.getMessage().indexOf("No bracketing"));
@@ -269,7 +269,7 @@ class BrentSolverTest {
 
         SolverException ex;
 
-        // Invalid guess (it *is* a root, but outside of the range).
+
         ex = Assertions.assertThrows(SolverException.class,
             () -> solver.findRoot(func, 0.0, 7.0, 0.6));
         Assertions.assertNotEquals(-1, ex.getMessage().indexOf("out of range"));
@@ -288,53 +288,53 @@ class BrentSolverTest {
         double result;
         MonitoredFunction f;
 
-        // No guess.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.6, 7.0);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         final int referenceCallsCount = f.getCallsCount();
         Assertions.assertTrue(referenceCallsCount >= 13);
 
-        // Bad guess.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.6, 0.61, 7.0);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() > referenceCallsCount);
 
-        // Good guess.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.6, 0.9999990001, 7.0);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertTrue(f.getCallsCount() < referenceCallsCount);
 
-        // Perfect guess.
+
         f = new MonitoredFunction(func);
         result = solver.findRoot(f, 0.6, 1.0, 7.0);
         Assertions.assertEquals(1.0, result, DEFAULT_ABSOLUTE_ACCURACY);
         Assertions.assertEquals(1, f.getCallsCount());
     }
 
-    /**
-     * Test that a change in sign is detected with sub-normal numbers.
-     * See NUMBERS-168.
-     */
+
+
+
+
     @Test
     void testSubNormalBracket() {
         final double lower = Double.MIN_VALUE;
         final double initial = lower * 5;
         final double upper = lower * 10;
-        // Using zero for the accuracy will only terminate the solver if the root
-        // equals 0.0 within 1 ULP.
+
+
         final BrentSolver solver = new BrentSolver(0.0,
                                                    0.0,
                                                    0.0);
-        // Target below the initial estimate
+
         final double target1 = lower * 2;
         final DoubleUnaryOperator func1 = x -> x - target1;
         final double result1 = solver.findRoot(func1, lower, initial, upper);
         Assertions.assertEquals(target1, result1, Math.ulp(target1));
 
-        // Target above the initial estimate
+
         final double target2 = lower * 7;
         final DoubleUnaryOperator func2 = x -> x - target2;
         final double result2 = solver.findRoot(func2, lower, initial, upper);
@@ -346,7 +346,7 @@ class BrentSolverTest {
         final BrentSolver solver = new BrentSolver(DEFAULT_RELATIVE_ACCURACY,
                                                    DEFAULT_ABSOLUTE_ACCURACY,
                                                    DEFAULT_FUNCTION_ACCURACY);
-        // Linear function close to positive infinity
+
         final double lower1 = Double.MAX_VALUE / 2;
         final double upper1 = Double.MAX_VALUE;
         final double target1 = lower1 + 0.5 * (upper1 - lower1);
@@ -354,7 +354,7 @@ class BrentSolverTest {
         final double result1 = solver.findRoot(func1, lower1, upper1);
         Assertions.assertEquals(target1, result1, Math.ulp(target1));
 
-        // Linear function close to negative infinity
+
         final double lower2 = -Double.MAX_VALUE;
         final double upper2 = -Double.MAX_VALUE / 2;
         final double target2 = lower2 + 0.5 * (upper2 - lower2);
@@ -362,7 +362,7 @@ class BrentSolverTest {
         final double result2 = solver.findRoot(func2, lower2, upper2);
         Assertions.assertEquals(target2, result2, Math.ulp(target2));
 
-        // Linear function across the entire finite range of a double
+
         final double target3 = Double.MAX_VALUE / 2;
         final DoubleUnaryOperator func3 = x -> x - target3;
         final double result3 = solver.findRoot(func3, -Double.MAX_VALUE, Double.MAX_VALUE);
@@ -376,17 +376,17 @@ class BrentSolverTest {
                                                    DEFAULT_FUNCTION_ACCURACY);
         final double min = Double.MIN_VALUE;
 
-        // No bracket
+
         final DoubleUnaryOperator func1 = x -> 1;
         SolverException ex1 = Assertions.assertThrows(SolverException.class,
             () -> solver.findRoot(func1, min, min));
         Assertions.assertTrue(ex1.getMessage().toLowerCase(Locale.ROOT).contains("no bracket"));
 
-        // Still no bracket but the function is within the function accuracy of zero
+
         final DoubleUnaryOperator func2 = x -> 1e-100;
         Assertions.assertEquals(min, solver.findRoot(func2, min, min));
 
-        // Ensure the correct exception is raised for a bad bracket
+
         final double lo = 2;
         final double hi = 1;
         SolverException ex2 = Assertions.assertThrows(SolverException.class,
@@ -394,17 +394,17 @@ class BrentSolverTest {
         Assertions.assertEquals(String.format(SolverException.TOO_LARGE, lo, hi), ex2.getMessage());
     }
 
-    /**
-     * Test that the algorithm terminates when further iteration is not possible as the
-     * bracket is within machine accuracy of the root.
-     * See NUMBERS-211.
-     */
+
+
+
+
+
     @Test
     void testConvergenceToMachineAccuracy() {
-        // Degenerate accuracies below the resolution of double: the bracket
-        // shrinks to the adjacent doubles around sqrt(2) and can then never
-        // satisfy |0.5 * (c - b)| <= tol with tol = 1e-30. The solver must
-        // detect this and return instead of iterating forever.
+
+
+
+
         final BrentSolver solver = new BrentSolver(0, 1e-30, 0);
         final DoubleUnaryOperator f = x -> x * x - 2;
         final double x = Assertions.assertTimeoutPreemptively(Duration.ofMillis(500),

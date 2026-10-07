@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.quaternion;
 
 import java.util.Random;
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class QuaternionTest {
-    /** Epsilon for double comparison. */
+
     private static final double EPS = Math.ulp(1d);
-    /** Epsilon for double comparison. */
+
     private static final double COMPARISON_EPS = 1e-14;
 
     @Test
@@ -121,7 +121,7 @@ class QuaternionTest {
     @Test
     final void testMultiplyQuaternionQuaternion() {
 
-        // Case : analytic test case
+
 
         final Quaternion qA = Quaternion.of(1, 0.5, -3, 4);
         final Quaternion qB = Quaternion.of(6, 2, 1, -9);
@@ -132,8 +132,8 @@ class QuaternionTest {
         Assertions.assertEquals(-4.5, qResult.getY(), EPS);
         Assertions.assertEquals(21.5, qResult.getZ(), EPS);
 
-        // Conjugate of the product of two quaternions and product of their conjugates :
-        // Conj(qA * qB) = Conj(qB) * Conj(qA)
+
+
 
         final Quaternion productOfConjugate = qB.conjugate().multiply(qA.conjugate());
         final Quaternion conjugateOfProduct = qA.multiply(qB).conjugate();
@@ -147,7 +147,7 @@ class QuaternionTest {
     @Test
     final void testMultiplyQuaternionVector() {
 
-        // Case : Product between a vector and a quaternion : QxV
+
 
         final Quaternion quaternion = Quaternion.of(4, 7, -1, 2);
         final double[] vector = {2.0, 1.0, 3.0};
@@ -158,7 +158,7 @@ class QuaternionTest {
         Assertions.assertEquals(-13, qResultQxV.getY(), EPS);
         Assertions.assertEquals(21, qResultQxV.getZ(), EPS);
 
-        // Case : Product between a vector and a quaternion : VxQ
+
 
         final Quaternion qResultVxQ = Quaternion.multiply(Quaternion.of(vector), quaternion);
 
@@ -170,9 +170,9 @@ class QuaternionTest {
 
     @Test
     final void testDotProductQuaternionQuaternion() {
-        // expected output
+
         final double expected = -6.;
-        // inputs
+
         final Quaternion q1 = Quaternion.of(1, 2, 2, 1);
         final Quaternion q2 = Quaternion.of(3, -2, -1, -3);
 
@@ -185,12 +185,12 @@ class QuaternionTest {
 
     @Test
     final void testScalarMultiplyDouble() {
-        // expected outputs
+
         final double w = 1.6;
         final double x = -4.8;
         final double y = 11.20;
         final double z = 2.56;
-        // inputs
+
         final Quaternion q1 = Quaternion.of(0.5, -1.5, 3.5, 0.8);
         final double a = 3.2;
 
@@ -204,12 +204,12 @@ class QuaternionTest {
 
     @Test
     final void testAddQuaternionQuaternion() {
-        // expected outputs
+
         final double w = 4;
         final double x = -1;
         final double y = 2;
         final double z = -4;
-        // inputs
+
         final Quaternion q1 = Quaternion.of(1., 2., -2., -1.);
         final Quaternion q2 = Quaternion.of(3., -3., 4., -3.);
 
@@ -229,12 +229,12 @@ class QuaternionTest {
 
     @Test
     final void testSubtractQuaternionQuaternion() {
-        // expected outputs
+
         final double w = -2.;
         final double x = 5.;
         final double y = -6.;
         final double z = 2.;
-        // inputs
+
         final Quaternion q1 = Quaternion.of(1., 2., -2., -1.);
         final Quaternion q2 = Quaternion.of(3., -3., 4., -3.);
 
@@ -341,8 +341,8 @@ class QuaternionTest {
         y = Quaternion.of(0.0 + Double.MIN_VALUE, 0.0, 0.0, 0.0);
         Assertions.assertNotEquals(x.hashCode(), y.hashCode());
 
-        // "equals" and "hashCode" must be compatible: if two objects have
-        // different hash codes, "equals" must return false.
+
+
         final String msg = "'equals' not compatible with 'hashCode'";
 
         x = Quaternion.of(0.0, 0.0, 0.0, 0.0);
@@ -538,7 +538,7 @@ class QuaternionTest {
             final Quaternion inverseQNul = qNul.inverse();
             Assertions.fail("expecting ZeroException but got : " + inverseQNul);
         } catch (IllegalStateException ex) {
-            // expected
+
         }
     }
 
@@ -674,12 +674,12 @@ class QuaternionTest {
         Assertions.assertEquals("[1.0 2.0 3.0 4.0]", q.toString());
     }
 
-    /**
-     * Assert that two quaternions are equal within tolerance
-     * @param actual
-     * @param expected
-     * @param tolerance
-     */
+
+
+
+
+
+
     private void assertEquals(Quaternion actual, Quaternion expected, double tolerance) {
         Assertions.assertTrue(actual.equals(expected, tolerance), "expecting " + expected + " but got " + actual);
     }

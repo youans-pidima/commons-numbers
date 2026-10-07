@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.examples.jmh.arrays;
 
@@ -28,9 +28,9 @@ import org.apache.commons.numbers.examples.jmh.arrays.Partition.SPStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Executes tests for {@link PartitionFactory}.
- */
+
+
+
 class PartitionFactoryTest {
     @Test
     void testGetMinQuickSelectSize() {
@@ -70,7 +70,7 @@ class PartitionFactoryTest {
     @Test
     void testGetControlFlags() {
         assertIntParameter(Partition.CONTROL_FLAGS, "CF", PartitionFactory::getControlFlags);
-        // Special support for negative flags
+
         Assertions.assertEquals(-1, PartitionFactory.getControlFlags(new String[] {"CF-1"}));
         Assertions.assertEquals(-2, PartitionFactory.getControlFlags(new String[] {"CF-2"}));
         Assertions.assertEquals(-42, PartitionFactory.getControlFlags(new String[] {"none"}, -42));
@@ -79,7 +79,7 @@ class PartitionFactoryTest {
     @Test
     void testGetOptionFlags() {
         assertIntParameter(Partition.OPTION_FLAGS, "OF", PartitionFactory::getOptionFlags);
-        // Special support for negative flags
+
         Assertions.assertEquals(-1, PartitionFactory.getOptionFlags(new String[] {"OF-1"}));
         Assertions.assertEquals(-2, PartitionFactory.getOptionFlags(new String[] {"OF-2"}));
         Assertions.assertEquals(-42, PartitionFactory.getOptionFlags(new String[] {"none"}, -42));
@@ -131,7 +131,7 @@ class PartitionFactoryTest {
         final String[] s = {"nothing"};
         Assertions.assertEquals(defaultValue, fun.applyAsInt(s));
         Assertions.assertEquals("nothing", s[0]);
-        // Prevent overflow when setting non-default values
+
         if (defaultValue + 4 < 0) {
             defaultValue = 0;
         }

@@ -1,52 +1,52 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
-/**
- * Computes \( log_e B(p, q) \).
- * <p>
- * This class is immutable.
- * </p>
- */
+
+
+
+
+
+
 public final class LogBeta {
-    /** The threshold value of 10 where the series expansion of the \( \Delta \) function applies. */
+
     private static final double TEN = 10;
-    /** The threshold value of 2 for algorithm switch. */
+
     private static final double TWO = 2;
-    /** The threshold value of 1000 for algorithm switch. */
+
     private static final double THOUSAND = 1000;
 
-    /** The constant value of ½log 2π. */
+
     private static final double HALF_LOG_TWO_PI = 0.9189385332046727;
 
-    /**
-     * The coefficients of the series expansion of the \( \Delta \) function.
-     * This function is defined as follows:
-     * \[
-     *  \Delta(x) = \log \Gamma(x) - (x - \frac{1}{2}) \log a + a - \frac{1}{2} \log 2\pi,
-     * \]
-     * <p>
-     * See equation (23) in Didonato and Morris (1992). The series expansion,
-     * which applies for \( x \geq 10 \), reads
-     * </p>
-     * \[
-     *  \Delta(x) = \frac{1}{x} \sum_{n = 0}^{14} d_n (\frac{10}{x})^{2 n}
-     * \]
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static final double[] DELTA = {
         .833333333333333333333333333333E-01,
         -.277777777777777777777777752282E-04,
@@ -65,42 +65,42 @@ public final class LogBeta {
         .171348014966398575409015466667E-22
     };
 
-    /** Private constructor. */
+
     private LogBeta() {
-        // intentionally empty.
+
     }
 
-    /**
-     * Returns the value of \( \Delta(b) - \Delta(a + b) \),
-     * with \( 0 \leq a \leq b \) and \( b \geq 10 \).
-     * Based on equations (26), (27) and (28) in Didonato and Morris (1992).
-     *
-     * @param a First argument.
-     * @param b Second argument.
-     * @return the value of \( \Delta(b) - \Delta(a + b) \)
-     * @throws IllegalArgumentException if {@code a < 0} or {@code a > b}
-     * @throws IllegalArgumentException if {@code b < 10}
-     */
+
+
+
+
+
+
+
+
+
+
+
     private static double deltaMinusDeltaSum(final double a,
                                              final double b) {
-        // Assumptions:
-        // Never called with a < 0; a > b; or b < 10
+
+
 
         final double h = a / b;
         final double p = h / (1 + h);
         final double q = 1 / (1 + h);
         final double q2 = q * q;
-        /*
-         * s[i] = 1 + q + ... - q**(2 * i)
-         */
+
+
+
         final double[] s = new double[DELTA.length];
         s[0] = 1;
         for (int i = 1; i < s.length; i++) {
             s[i] = 1 + (q + q2 * s[i - 1]);
         }
-        /*
-         * w = Delta(b) - Delta(a + b)
-         */
+
+
+
         final double sqrtT = 10 / b;
         final double t = sqrtT * sqrtT;
         double w = DELTA[DELTA.length - 1] * s[s.length - 1];
@@ -110,17 +110,17 @@ public final class LogBeta {
         return w * p / b;
     }
 
-    /**
-     * Returns the value of \( \Delta(p) + \Delta(q) - \Delta(p + q) \),
-     * with \( p, q \geq 10 \).
-     * Based on the <em>NSWC Library of Mathematics Subroutines</em> implementation,
-     * {@code DBCORR}.
-     *
-     * @param p First argument.
-     * @param q Second argument.
-     * @return the value of \( \Delta(p) + \Delta(q) - \Delta(p + q) \).
-     * @throws IllegalArgumentException if {@code p < 10} or {@code q < 10}.
-     */
+
+
+
+
+
+
+
+
+
+
+
     private static double sumDeltaMinusDeltaSum(final double p,
                                                 final double q) {
 
@@ -142,16 +142,16 @@ public final class LogBeta {
         return z / a + deltaMinusDeltaSum(a, b);
     }
 
-    /**
-     * Returns the value of \( \log B(p, q) \) for \( 0 \leq x \leq 1 \) and \( p, q &gt; 0 \).
-     * Based on the <em>NSWC Library of Mathematics Subroutines</em> implementation,
-     * {@code DBETLN}.
-     *
-     * @param p First argument.
-     * @param q Second argument.
-     * @return the value of \( \log B(p, q) \), or {@code NaN} if
-     * {@code p <= 0} or {@code q <= 0}.
-     */
+
+
+
+
+
+
+
+
+
+
     public static double value(double p,
                                double q) {
         if (Double.isNaN(p) ||
@@ -234,10 +234,10 @@ public final class LogBeta {
                 return LogGamma.value(a) +
                        logGammaMinusLogGammaSum(a, b);
             }
-            // The original NSWC implementation was
-            //   LogGamma.value(a) + (LogGamma.value(b) - LogGamma.value(a + b));
-            // but the following command turned out to be more accurate.
-            // Note: Check for overflow that occurs if a and/or b are tiny.
+
+
+
+
             final double beta = Gamma.value(a) * Gamma.value(b) / Gamma.value(a + b);
             if (Double.isFinite(beta)) {
                 return Math.log(beta);
@@ -246,19 +246,19 @@ public final class LogBeta {
         }
     }
 
-    /**
-     * Returns the value of \( \log ( \Gamma(b) / \Gamma(a + b) ) \)
-     * for \( a \geq 0 \) and \( b \geq 10 \).
-     * Based on the <em>NSWC Library of Mathematics Subroutines</em> implementation,
-     * {@code DLGDIV}.
-     *
-     * <p>This method assumes \( a \leq b \).
-     *
-     * @param a First argument.
-     * @param b Second argument.
-     * @return the value of \( \log(\Gamma(b) / \Gamma(a + b) \).
-     * @throws IllegalArgumentException if {@code a < 0} or {@code b < 10}.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static double logGammaMinusLogGammaSum(double a,
                                                    double b) {
         if (a < 0) {
@@ -268,10 +268,10 @@ public final class LogBeta {
             throw new GammaException(GammaException.OUT_OF_RANGE, b, TEN, Double.POSITIVE_INFINITY);
         }
 
-        /*
-         * d = a + b - 0.5
-         */
-        // Assumption: always called with a <= b.
+
+
+
+
         final double d = b + (a - 0.5);
         final double w = deltaMinusDeltaSum(a, b);
 

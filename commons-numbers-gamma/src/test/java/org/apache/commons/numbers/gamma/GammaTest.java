@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,36 +21,36 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/**
- * Tests for {@link Gamma}.
- *
- * <p>The class directly calls the methods in {@link BoostGamma}. This test ensures
- * the arguments are passed through correctly. Accuracy of the function is tested
- * in {@link BoostGammaTest}.
- */
+
+
+
+
+
+
+
 class GammaTest {
-    /**
-     * Reference data for the {@link Gamma#value(double)} function. This
-     * data was generated with the following <a
-     * href="https://maxima.sourceforge.net/">Maxima</a> script.
-     * Note: This data is different from the data used for {@link BoostGammaTest}.
-     *
-     * <pre>
-     * kill(all);
-     *
-     * fpprec : 64;
-     *
-     * EPSILON : 10**(-fpprec + 1);
-     * isInteger(x) := abs(x - floor(x)) <= EPSILON * abs(x);
-     * str(x) := ssubst("e","b",string(x));
-     *
-     * x : makelist(bfloat(i / 8) + 0.0625, i, -160, 160);
-     * x : append(x, makelist(bfloat(i / 2) + 0.125, i, 41, 200));
-     *
-     * for i : 1 while i <= length(x) do if not(isInteger(x[i])) then
-     *     printf(true, "\"~f,~a\",~%", x[i], str(gamma(x[i]))), fpprintprec:30;
-     *</pre>
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @ParameterizedTest
     @CsvSource(value = {
         "-19.9375,7.99347140318629900587250189872e-18",
@@ -557,8 +557,8 @@ class GammaTest {
 
     @Test
     void testGammaNegativeDouble() {
-        // check that the gamma function properly switches sign
-        // see: https://en.wikipedia.org/wiki/Gamma_function
+
+
 
         double previousGamma = Gamma.value(-18.5);
         for (double x = -19.5; x > -25; x -= 1.0) {

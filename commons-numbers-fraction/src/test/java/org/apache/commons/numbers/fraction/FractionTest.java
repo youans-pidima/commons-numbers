@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.fraction;
 
 import java.util.ArrayList;
@@ -25,14 +25,14 @@ import org.apache.commons.numbers.fraction.CommonTestCases.BinaryOperatorTestCas
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for {@link Fraction}.
- */
+
+
+
 class FractionTest {
 
-    /** The zero representation with positive denominator. */
+
     private static final Fraction ZERO_P = Fraction.of(0, 1);
-    /** The zero representation with negative denominator. */
+
     private static final Fraction ZERO_N = Fraction.of(0, -1);
 
     private static void assertFraction(int expectedNumerator, int expectedDenominator, Fraction actual) {
@@ -58,13 +58,13 @@ class FractionTest {
             );
         }
 
-        // Special cases.
+
         assertFraction(Integer.MIN_VALUE, -1, Fraction.of(Integer.MIN_VALUE, -1));
         assertFraction(1, Integer.MIN_VALUE, Fraction.of(1, Integer.MIN_VALUE));
         assertFraction(-1, Integer.MIN_VALUE, Fraction.of(-1, Integer.MIN_VALUE));
         assertFraction(1, 1, Fraction.of(Integer.MIN_VALUE, Integer.MIN_VALUE));
 
-        // Divide by zero
+
         Assertions.assertThrows(ArithmeticException.class, () -> Fraction.of(1, 0));
     }
 
@@ -78,7 +78,7 @@ class FractionTest {
         Assertions.assertSame(Fraction.ZERO, Fraction.of(0, -1));
     }
 
-    // MATH-179
+
     @Test
     void testDoubleConstructor() {
         for (final CommonTestCases.DoubleToFractionTestCase testCase : CommonTestCases.doubleConstructorTestCases()) {
@@ -89,7 +89,7 @@ class FractionTest {
             );
         }
 
-        // Cases with different exact results from BigFraction
+
         assertFraction(1, 3, Fraction.from(1.0 / 3.0));
         assertFraction(17, 100, Fraction.from(17.0 / 100.0));
         assertFraction(317, 100, Fraction.from(317.0 / 100.0));
@@ -98,8 +98,8 @@ class FractionTest {
         assertFraction(-317, 100, Fraction.from(-317.0 / 100.0));
     }
 
-    // MATH-181
-    // NUMBERS-147
+
+
     @Test
     void testDoubleConstructorWithMaxDenominator() {
         for (final CommonTestCases.DoubleToFractionTestCase testCase : CommonTestCases.doubleMaxDenomConstructorTestCases()) {
@@ -110,7 +110,7 @@ class FractionTest {
             );
         }
 
-        // Cases with different exact results from BigFraction
+
         assertFraction(Integer.MIN_VALUE, -1, Fraction.from(Integer.MIN_VALUE * -1.0, 2));
         assertFraction(Integer.MIN_VALUE, -3, Fraction.from(Integer.MIN_VALUE / -3.0, 10));
         assertFraction(1, Integer.MIN_VALUE, Fraction.from(1.0 / Integer.MIN_VALUE, Integer.MIN_VALUE));
@@ -132,19 +132,19 @@ class FractionTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> Fraction.from(1.0, Double.NaN, maxIterations));
         Assertions.assertThrows(IllegalArgumentException.class, () -> Fraction.from(1.0, -1.0, maxIterations));
         Assertions.assertThrows(IllegalArgumentException.class, () -> Fraction.from(1.0, eps, 0));
-        // Test a zero epsilon is allowed
+
         assertFraction(1, 1, Fraction.from(1.0, 0, maxIterations));
     }
 
     @Test
     void testDoubleConstructorGoldenRatioThrows() {
-        // the golden ratio is notoriously a difficult number for continuous fraction
+
         Assertions.assertThrows(ArithmeticException.class,
             () -> Fraction.from((1 + Math.sqrt(5)) / 2, 1.0e-12, 25)
         );
     }
 
-    // MATH-1029
+
     @Test
     void testDoubleConstructorWithMaxDenominatorOverFlow() {
         Assertions.assertThrows(ArithmeticException.class,
@@ -234,13 +234,13 @@ class FractionTest {
         Assertions.assertEquals(-1, g.compareTo(f));
         Assertions.assertEquals(1, a.compareTo(g));
         Assertions.assertEquals(-1, d.compareTo(g));
-        Assertions.assertEquals(-1, h.compareTo(i)); // JIRA:NUMBERS-207
+        Assertions.assertEquals(-1, h.compareTo(i));
 
         Assertions.assertEquals(0, Fraction.of(0, 3).compareTo(Fraction.of(0, -2)));
 
-        // these two values are different approximations of PI
-        // the first  one is approximately PI - 3.07e-18
-        // the second one is approximately PI + 1.936e-17
+
+
+
         final Fraction pi1 = Fraction.of(1068966896, 340262731);
         final Fraction pi2 = Fraction.of(411557987, 131002976);
         Assertions.assertEquals(-1, pi1.compareTo(pi2));
@@ -348,10 +348,10 @@ class FractionTest {
             assertFraction(testCase.expectedNumerator, testCase.expectedDenominator, f.negate());
         }
 
-        // Test special cases of negation that differ from BigFraction.
+
         final Fraction one = Fraction.of(Integer.MIN_VALUE, Integer.MIN_VALUE);
         assertFraction(-1, 1, one.negate());
-        // Special case where the negation of the numerator is not possible.
+
         final Fraction minValue = Fraction.of(Integer.MIN_VALUE, 1);
         assertFraction(Integer.MIN_VALUE, -1, minValue.negate());
     }
@@ -381,7 +381,7 @@ class FractionTest {
 
         Assertions.assertThrows(NullPointerException.class, () -> Fraction.ONE.add((Fraction) null));
 
-        // Edge case
+
         assertFraction(Integer.MIN_VALUE, -1, Fraction.ZERO.add(Fraction.of(Integer.MIN_VALUE, -1)));
         assertFraction(Integer.MIN_VALUE, 1, Fraction.ZERO.add(Fraction.of(Integer.MIN_VALUE, 1)));
         assertFraction(Integer.MIN_VALUE, 1, Fraction.ZERO.add(Integer.MIN_VALUE));
@@ -481,7 +481,7 @@ class FractionTest {
 
         Assertions.assertThrows(NullPointerException.class, () -> Fraction.ONE.add((Fraction) null));
 
-        // Edge case
+
         assertFraction(Integer.MIN_VALUE, 1, Fraction.ZERO.subtract(Fraction.of(Integer.MIN_VALUE, -1)));
         assertFraction(Integer.MIN_VALUE, -1, Fraction.ZERO.subtract(Fraction.of(Integer.MIN_VALUE, 1)));
         assertFraction(Integer.MIN_VALUE, -1, Fraction.ZERO.subtract(Integer.MIN_VALUE));
@@ -495,17 +495,17 @@ class FractionTest {
         Assertions.assertNotEquals(zero, new Object());
         Assertions.assertNotEquals(zero, Double.valueOf(0));
 
-        // Equal to same rational number
+
         final Fraction zero2 = Fraction.of(0, 2);
         assertEqualAndHashCodeEqual(zero, zero2);
 
-        // Not equal to different rational number
+
         final Fraction one = Fraction.of(1, 1);
         Assertions.assertNotEquals(zero, one);
         Assertions.assertNotEquals(one, zero);
 
-        // Test using different representations of the same fraction
-        // (Denominators are primes)
+
+
         for (final int[] f : new int[][] {{1, 1}, {2, 3}, {6826, 15373}, {1373, 103813}, {0, 3}}) {
             final int num = f[0];
             final int den = f[1];
@@ -519,14 +519,14 @@ class FractionTest {
             assertEqualAndHashCodeEqual(f2, f1);
         }
 
-        // Same numerator or denominator as 1/1
+
         final Fraction half = Fraction.of(1, 2);
         final Fraction two = Fraction.of(2, 1);
         Assertions.assertNotEquals(one, half);
         Assertions.assertNotEquals(one, two);
 
-        // Check worst case fractions which will have a component using MIN_VALUE.
-        // Note: abs(MIN_VALUE) is negative but this should not effect the equals result.
+
+
         final Fraction almostOne = Fraction.of(Integer.MIN_VALUE, Integer.MAX_VALUE);
         final Fraction almostOne2 = Fraction.of(Integer.MIN_VALUE, -Integer.MAX_VALUE);
         Assertions.assertEquals(almostOne, almostOne);
@@ -537,23 +537,23 @@ class FractionTest {
         Assertions.assertNotEquals(almostZero, almostZero2);
     }
 
-    /**
-     * Assert the two fractions are equal. The contract of {@link Object#hashCode()} requires
-     * that the hash code must also be equal.
-     *
-     * <p>Ideally this method should not be called with the same instance for both arguments.
-     * It is intended to be used to test different objects that are equal have the same hash code.
-     * However the same object may be constructed for different arguments using factory
-     * constructors, e.g. zero.
-     *
-     * @param f1 Fraction 1.
-     * @param f2 Fraction 2.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
     private static void assertEqualAndHashCodeEqual(Fraction f1, Fraction f2) {
         Assertions.assertEquals(f1, f2);
         Assertions.assertEquals(f1.hashCode(), f2.hashCode(), "Equal fractions have different hashCode");
-        // Check the computation matches the result of Arrays.hashCode and the signum.
-        // This is not mandated but is a recommendation.
+
+
         final int expected = f1.signum() *
                              Arrays.hashCode(new int[] {Math.abs(f1.getNumerator()),
                                                         Math.abs(f1.getDenominator())});
@@ -651,21 +651,21 @@ class FractionTest {
 
     @Test
     void testNumbers150() {
-        // zero to negative powers should throw an exception
+
         Assertions.assertThrows(ArithmeticException.class, () -> Fraction.ZERO.pow(-1));
         Assertions.assertThrows(ArithmeticException.class, () -> Fraction.ZERO.pow(Integer.MIN_VALUE));
 
-        // shall overflow
+
         final Fraction f2 = Fraction.of(2);
         Assertions.assertThrows(ArithmeticException.class, () -> f2.pow(Integer.MIN_VALUE));
         final Fraction f12 = Fraction.of(1, 2);
         Assertions.assertThrows(ArithmeticException.class, () -> f12.pow(Integer.MIN_VALUE));
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#add(Fraction)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryOperatorTestCase> addFractionOverflowTestCases() {
         final List<BinaryOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryOperatorTestCase(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE - 1, 0, 0));
@@ -677,10 +677,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#add(int)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryIntOperatorTestCase> addIntOverflowTestCases() {
         final List<BinaryIntOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryIntOperatorTestCase(Integer.MIN_VALUE, 1, -1, 0, 0));
@@ -689,10 +689,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#divide(Fraction)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryOperatorTestCase> divideByFractionOverflowTestCases() {
         final List<BinaryOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryOperatorTestCase(1, Integer.MAX_VALUE, 2, 1, 0, 0));
@@ -702,10 +702,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#divide(int)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryIntOperatorTestCase> divideByIntOverflowTestCases() {
         final List<BinaryIntOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryIntOperatorTestCase(1, Integer.MAX_VALUE, 2, 0, 0));
@@ -715,10 +715,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#multiply(Fraction)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryOperatorTestCase> multiplyByFractionOverflowTestCases() {
         final List<BinaryOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryOperatorTestCase(Integer.MAX_VALUE, 1, 2, 1, 0, 0));
@@ -728,10 +728,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#multiply(int)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryIntOperatorTestCase> multiplyByIntOverflowTestCases() {
         final List<BinaryIntOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryIntOperatorTestCase(Integer.MAX_VALUE, 1, 2, 0, 0));
@@ -741,10 +741,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#subtract(Fraction)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryOperatorTestCase> subtractFractionOverflowTestCases() {
         final List<BinaryOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryOperatorTestCase(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE - 1, 0, 0));
@@ -756,10 +756,10 @@ class FractionTest {
         return testCases;
     }
 
-    /**
-     * Defines test cases that cause overflow in {@link Fraction#subtract(int)}.
-     * @return a list of test cases
-     */
+
+
+
+
     private static List<BinaryIntOperatorTestCase> subtractIntOverflowTestCases() {
         final List<BinaryIntOperatorTestCase> testCases = new ArrayList<>();
         testCases.add(new BinaryIntOperatorTestCase(Integer.MIN_VALUE, 1, 1, 0, 0));

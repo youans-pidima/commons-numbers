@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.primes;
 
 import java.math.BigInteger;
@@ -25,17 +25,17 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-/**
- * Utility methods to work on primes within the {@code int} range.
- */
+
+
+
 final class SmallPrimes {
-    /**
-     * The first 512 prime numbers.
-     *
-     * <p>It contains all primes smaller or equal to the cubic square of Integer.MAX_VALUE.
-     * As a result, {@code int} numbers which are not reduced by those primes are guaranteed
-     * to be either prime or semi prime.
-     */
+
+
+
+
+
+
+
     static final int[] PRIMES = {
         2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107,
         109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229,
@@ -65,45 +65,45 @@ final class SmallPrimes {
         3469, 3491, 3499, 3511, 3517, 3527, 3529, 3533, 3539, 3541, 3547, 3557, 3559, 3571, 3581, 3583, 3593, 3607,
         3613, 3617, 3623, 3631, 3637, 3643, 3659, 3671};
 
-    /** The last number in {@link #PRIMES}. */
+
     static final int PRIMES_LAST = PRIMES[PRIMES.length - 1];
 
-    /**
-     * A set of prime numbers mapped to an array of all integers between
-     * 0 (inclusive) and the least common multiple, i.e. the product, of those
-     * prime numbers (exclusive) that are not divisible by any of these prime
-     * numbers. The prime numbers in the set are among the first 512 prime
-     * numbers, and the {@code int} array containing the numbers undivisible by
-     * these prime numbers is sorted in ascending order.
-     *
-     * <p>The purpose of this field is to speed up trial division by skipping
-     * multiples of individual prime numbers, specifically those contained
-     * in the key of this {@code Entry}, by only trying integers that are equivalent
-     * to one of the integers contained in the value of this {@code Entry} modulo
-     * the least common multiple of the prime numbers in the set.</p>
-     *
-     * <p>Note that, if {@code product} is the product of the prime numbers,
-     * the last number in the array of coprime integers is necessarily
-     * {@code product - 1}, because if {@code product ≡ 0 mod p}, then
-     * {@code product - 1 ≡ -1 mod p}, and {@code 0 ≢ -1 mod p} for any prime number p.</p>
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static final Entry<Set<Integer>, int[]> PRIME_NUMBERS_AND_COPRIME_EQUIVALENCE_CLASSES;
 
     static {
-        // According to the Chinese Remainder Theorem, for every combination of
-        // congruence classes modulo distinct, pairwise coprime moduli, there
-        // exists exactly one congruence class modulo the product of these
-        // moduli that is contained in every one of the former congruence
-        // classes. Since the number of congruence classes coprime to a prime
-        // number p is p-1, the number of congruence classes coprime to all
-        // prime numbers p_1, p_2, p_3 … is (p_1 - 1) * (p_2 - 1) * (p_3 - 1) …
-        //
-        // Therefore, when using the first five prime numbers as those whose multiples
-        // are to be skipped in trial division, the array containing the coprime
-        // equivalence classes will have to hold (2-1)*(3-1)*(5-1)*(7-1)*(11-1) = 480
-        // values. As a consequence, the amount of integers to be tried in
-        // trial division is reduced to 480/(2*3*5*7*11), which is about 20.78%,
-        // of all integers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         final Set<Integer> primeNumbers = new HashSet<>();
         primeNumbers.add(2);
         primeNumbers.add(3);
@@ -132,19 +132,19 @@ final class SmallPrimes {
         PRIME_NUMBERS_AND_COPRIME_EQUIVALENCE_CLASSES = new SimpleImmutableEntry<>(primeNumbers, equivalenceClasses);
     }
 
-    /**
-     * Utility class.
-     */
+
+
+
     private SmallPrimes() {}
 
-    /**
-     * Extract small factors.
-     *
-     * @param n Number to factor, must be &gt; 0.
-     * @param factors List where to add the factors.
-     * @return the part of {@code n} which remains to be factored, it is either
-     * a prime or a semi-prime.
-     */
+
+
+
+
+
+
+
+
     static int smallTrialDivision(int n,
                                   final List<Integer> factors) {
         for (final int p : PRIMES) {
@@ -156,36 +156,36 @@ final class SmallPrimes {
         return n;
     }
 
-    /**
-     * Extract factors between {@link #PRIMES_LAST} {@code + 2} and {@code maxFactors}.
-     *
-     * @param n Number to factorize, must be larger than {@link #PRIMES_LAST} {@code + 2}
-     * and must not contain any factor below {@link #PRIMES_LAST} {@code + 2}.
-     * @param maxFactor Upper bound of trial division: if it is reached, the
-     * method gives up and returns {@code n}.
-     * @param factors the list where to add the factors.
-     */
+
+
+
+
+
+
+
+
+
     static void boundedTrialDivision(int n,
                                      int maxFactor,
                                      List<Integer> factors) {
         final int minFactor = PRIMES_LAST + 2;
 
-        // Only trying integers of the form k*m + c, where k >= 0, m is the
-        // product of some prime numbers which n is required not to contain
-        // as prime factors, and c is an integer undivisible by all of those
-        // prime numbers; in other words, skipping multiples of these primes.
+
+
+
+
         final int[] a = PRIME_NUMBERS_AND_COPRIME_EQUIVALENCE_CLASSES.getValue();
         final int m = a[a.length - 1] + 1;
         int km = m * (minFactor / m);
         int currentEquivalenceClassIndex = Arrays.binarySearch(a, minFactor % m);
 
-        // Since minFactor is the next smallest prime number after the
-        // first 512 primes, it cannot be a multiple of one of them, therefore,
-        // the index returned by the above binary search must be non-negative.
+
+
+
 
         boolean done = false;
         while (!done) {
-            // no check is done about n >= f
+
             final int f = km + a[currentEquivalenceClassIndex];
             if (f > maxFactor) {
                 done = true;
@@ -202,48 +202,48 @@ final class SmallPrimes {
                 }
             }
         }
-        // Note: When this method is used after the small trial division n != 1
-        // for all n in [2, MAX_VALUE] (tested using an exhaustive enumeration).
+
+
         factors.add(n);
     }
 
-    /**
-     * Factorization by trial division.
-     *
-     * @param n Number to factor.
-     * @return the list of prime factors of {@code n}.
-     */
+
+
+
+
+
+
     static List<Integer> trialDivision(int n) {
         final List<Integer> factors = new ArrayList<>(32);
         n = smallTrialDivision(n, factors);
         if (n == 1) {
             return factors;
         }
-        // here we are sure that n is either a prime or a semi prime
+
         final int bound = (int) Math.sqrt(n);
         boundedTrialDivision(n, bound, factors);
         return factors;
     }
 
-    /**
-     * Miller-Rabin probabilistic primality test for {@code int} type, used in such
-     * a way that a result is always guaranteed.
-     *
-     * <p>It uses the prime numbers as successive base therefore it is guaranteed
-     * to be always correct (see Handbook of applied cryptography by Menezes,
-     * table 4.1).
-     *
-     * @param n Number to test: an odd integer &ge; 3.
-     * @return true if {@code n} is prime, false if it is definitely composite.
-     */
+
+
+
+
+
+
+
+
+
+
+
     static boolean millerRabinPrimeTest(final int n) {
         final int nMinus1 = n - 1;
         final int s = Integer.numberOfTrailingZeros(nMinus1);
         final int r = nMinus1 >> s;
-        // r must be odd, it is not checked here
+
         final int t;
         if (n >= 25326001) {
-            // works up to 3.2 billion, int range stops at 2.1 so we are safe :-)
+
             t = 4;
         } else if (n >= 1373653) {
             t = 3;
@@ -266,14 +266,14 @@ final class SmallPrimes {
                     y = (int) (square % n);
                     if (y == 1) {
                         return false;
-                    } // definitely composite
+                    }
                     j++;
                 }
                 if (y != nMinus1) {
                     return false;
-                } // definitely composite
+                }
             }
         }
-        return true; // definitely prime
+        return true;
     }
 }

@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.examples.jmh.arrays;
 
@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link DoubleDataTransformers}.
- */
+
+
+
 class DoubleDataTransformersTest {
     @ParameterizedTest
     @MethodSource(value = {"nanData"})
@@ -57,16 +57,16 @@ class DoubleDataTransformersTest {
         assertSortTransformer(a, DoubleDataTransformers.createFactory(NaNPolicy.EXCLUDE, true).get(), false, true);
     }
 
-    /**
-     * Assert the transformer allows partitioning the data as if sorting using
-     * {@link Arrays#sort(double[])}. NaN should be moved to the end; signed zeros
-     * should be correctly ordered.
-     *
-     * @param a Data.
-     * @param t Transformer.
-     * @param includeNaN True if the size should include NaN
-     * @param copy True if the pre-processed data should be a copy
-     */
+
+
+
+
+
+
+
+
+
+
     private static void assertSortTransformer(double[] a, DoubleDataTransformer t,
             boolean includeNaN, boolean copy) {
         final double[] original = a.clone();
@@ -76,17 +76,17 @@ class DoubleDataTransformersTest {
         } else {
             Assertions.assertSame(a, b);
         }
-        // Count NaN
+
         final int nanCount = (int) Arrays.stream(a).filter(Double::isNaN).count();
         Assertions.assertEquals(a.length - nanCount, t.length(), "Length to process");
         Assertions.assertEquals(a.length - (includeNaN ? 0 : nanCount), t.size(), "Size of data");
-        // Partition / sort data up to the specified length
+
         Arrays.sort(b, 0, t.length());
-        // Full sort of the original
+
         Arrays.sort(original);
-        // Correct data given partition indices
+
         if (b.length > 0) {
-            // Use potentially invalid partition index
+
             t.postProcess(b, new int[] {b.length - 1}, 1);
         }
         Assertions.assertArrayEquals(original, b);

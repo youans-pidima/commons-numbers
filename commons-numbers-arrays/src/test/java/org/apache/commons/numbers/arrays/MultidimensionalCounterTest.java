@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.arrays;
 
@@ -21,10 +21,10 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Test cases for the {@link MultidimensionalCounter} class.
- *
- */
+
+
+
+
 class MultidimensionalCounterTest {
     @Test
     void testPreconditions() {
@@ -44,22 +44,22 @@ class MultidimensionalCounterTest {
 
     @Test
     void testSizeProductOverflow() {
-        // NUMBERS-212
-        // Size products that wrap modulo 2^32 back into positive range
-        // previously passed the constructor checks, creating an invalid counter.
-        // Total size wraps to +65536.
+
+
+
+
         Assertions.assertThrows(IllegalArgumentException.class,
             () -> MultidimensionalCounter.of(65537, 65536));
-        // Total size 4294967298 wraps to +2.
+
         Assertions.assertThrows(IllegalArgumentException.class,
             () -> MultidimensionalCounter.of(3, 1431655766));
-        // Cumulative (prefix) product wraps to +4, bypassing the per-step check.
+
         Assertions.assertThrows(IllegalArgumentException.class,
             () -> MultidimensionalCounter.of(2, 1073741825, 4));
-        // Cumulative product 641 * 6700417 = 2^32 + 1 wraps to +1.
+
         Assertions.assertThrows(IllegalArgumentException.class,
             () -> MultidimensionalCounter.of(1, 641, 6700417));
-        // The maximum representable total size is still accepted.
+
         Assertions.assertEquals(Integer.MAX_VALUE,
             MultidimensionalCounter.of(1, Integer.MAX_VALUE).getSize());
         Assertions.assertEquals(Integer.MAX_VALUE,
@@ -142,8 +142,8 @@ class MultidimensionalCounterTest {
         Assertions.assertEquals(Arrays.toString(sizes), c.toString());
     }
 
-    // Illustrates how to recover the iterator functionality that existed
-    // in Commons Math (v3.6.1) but was not ported to "Commons Numbers".
+
+
     @Test
     void testCommonsMathIterator() {
         final int[] sizes = new int[] {3, 2, 5};

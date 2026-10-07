@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.angle;
 
 import java.util.function.DoubleUnaryOperator;
@@ -21,9 +21,9 @@ import java.util.function.DoubleUnaryOperator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * Test cases for the {@link Angle} class.
- */
+
+
+
 class AngleTest {
     @Test
     void testConstants() {
@@ -131,12 +131,12 @@ class AngleTest {
         final DoubleUnaryOperator nZero = Angle.Rad.WITHIN_MINUS_PI_AND_PI;
         final DoubleUnaryOperator nPi = Angle.Rad.WITHIN_0_AND_2PI;
 
-        // arrange
+
         final double pi = Math.PI;
         double small = Math.ulp(Angle.TWO_PI);
-        double tiny = 5e-17; // pi + tiny = pi (the value is too small to add to pi)
+        double tiny = 5e-17;
 
-        // act/assert
+
         Assertions.assertEquals(Angle.TWO_PI - small, nPi.applyAsDouble(-small));
         Assertions.assertEquals(small, nPi.applyAsDouble(small));
 
@@ -152,7 +152,7 @@ class AngleTest {
 
     @Test
     void testHashCode() {
-        // Test assumes that the internal representation is in "turns".
+
         final double value = -123.456789;
         final int expected = Double.valueOf(value).hashCode();
         final int actual = Angle.Turn.of(value).hashCode();
@@ -195,9 +195,9 @@ class AngleTest {
         Assertions.assertEquals(x, normalizer.applyAsDouble(x));
         Assertions.assertEquals(above, normalizer.applyAsDouble(above));
 
-        // "below" is so close to "x" that below + Math.PI = x + Math.PI
-        // In this case, we can't return below + Math.PI because that is exactly equal to the
-        // upper bound of the range. Instead, we must return the lower bound of x.
+
+
+
         Assertions.assertEquals(x, normalizer.applyAsDouble(below));
     }
 }

@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package org.apache.commons.numbers.examples.jmh.arrays;
 
@@ -31,9 +31,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/**
- * Test for {@link IndexSet}.
- */
+
+
+
 class IndexSetTest {
 
     @Test
@@ -53,10 +53,10 @@ class IndexSetTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> set.asScanningPivotCache(right, left));
         Assertions.assertDoesNotThrow(() -> set.asScanningPivotCache(left, right));
         Assertions.assertDoesNotThrow(() -> set.asScanningPivotCache(left + 1, right - 1));
-        // We must know the capacity (the highest bit that can be stored).
+
         final int noOfLongs = 1 + (right - left) / Long.SIZE;
         final int highBit = left + noOfLongs * Long.SIZE - 1;
-        // Show this is correct
+
         set.set(highBit);
         final int capacity = set.nextClearBit(highBit);
         Assertions.assertEquals(highBit + 1, capacity);
@@ -66,20 +66,20 @@ class IndexSetTest {
 
     @Test
     void testMemoryFootprint() {
-        // Memory footprint is number of bits that has to be stored, rounded up to
-        // a multiple of 64
+
+
         final long longBytes = Long.BYTES;
         Assertions.assertEquals(longBytes * 1, IndexSet.memoryFootprint(0, 0));
         Assertions.assertEquals(longBytes * 1, IndexSet.memoryFootprint(0, 63));
         Assertions.assertEquals(longBytes * 2, IndexSet.memoryFootprint(0, 64));
         Assertions.assertEquals(longBytes * 2, IndexSet.memoryFootprint(0, 127));
         Assertions.assertEquals(longBytes * 3, IndexSet.memoryFootprint(0, 128));
-        // Test the documented 64 * ceil((right - left + 1) / 64
+
         Assertions.assertEquals(longBytes * Math.ceil(128 / 64.0), IndexSet.memoryFootprint(0, 127));
         Assertions.assertEquals(longBytes * Math.ceil(129 / 64.0), IndexSet.memoryFootprint(0, 128));
-        // Maximum capacity
+
         Assertions.assertEquals(longBytes * (1 << 25), IndexSet.memoryFootprint(0, Integer.MAX_VALUE));
-        // Offset from zero
+
         final int left = 12563;
         Assertions.assertEquals(longBytes * 1, IndexSet.memoryFootprint(left, left + 0));
         Assertions.assertEquals(longBytes * 1, IndexSet.memoryFootprint(left, left + 63));
@@ -108,7 +108,7 @@ class IndexSetTest {
         final BitSet ref = new BitSet(n);
         for (final int i : indices) {
             Assertions.assertEquals(ref.get(i), set.get(i));
-            // inclusive end
+
             set.set(i, i);
             ref.set(i);
             Assertions.assertTrue(set.get(i));
@@ -123,7 +123,7 @@ class IndexSetTest {
         for (int i = 1; i < indices.length; i++) {
             final int from = indices[i - 1];
             final int to = indices[i];
-            // inclusive end so skip duplicates
+
             if (from == to) {
                 continue;
             }
@@ -169,11 +169,11 @@ class IndexSetTest {
         final IndexSet set = createIndexSet(indices);
         final BitSet ref = new BitSet(n);
         Arrays.sort(indices);
-        // Note: Different from using a BitSet. The IndexSet does not support
-        // clear bits outside of the range used to construct it.
+
+
         final int highBit = indices[indices.length - 1];
 
-        // When empty this should return the start index. Only call with indices <= right.
+
         Assertions.assertEquals(0, set.nextClearBit(0));
         Assertions.assertEquals(indices[0] - 1, set.nextClearBit(indices[0] - 1));
         Assertions.assertEquals(indices[0], set.nextClearBit(indices[0]));
@@ -189,7 +189,7 @@ class IndexSetTest {
             final int middle = (from + to) >>> 1;
             Assertions.assertEquals(ref.nextClearBit(middle), set.nextClearBit(middle));
             Assertions.assertEquals(ref.previousClearBit(middle), set.previousClearBit(middle));
-            // inclusive end
+
             set.set(from, to);
             ref.set(from, to + 1);
             Assertions.assertEquals(ref.nextClearBit(middle), set.nextClearBit(middle));
@@ -207,32 +207,32 @@ class IndexSetTest {
             ref.set(i);
         });
         final int[] e = ref.stream().toArray();
-        // Check the output is the same
+
         final int[] a = new int[e.length];
         final int[] c = {0};
         set.forEach(i -> a[c[0]++] = i);
         Assertions.assertArrayEquals(e, a);
 
-        // Test toArray
+
 
         int[] original = indices.clone();
 
         int len = set.toArray(indices);
         int[] x = Arrays.copyOf(indices, len);
         Assertions.assertArrayEquals(e, x);
-        // Check rest of the array is untouched
+
         if (len < indices.length) {
             final int[] y = Arrays.copyOfRange(indices, len, indices.length);
             final int[] z = Arrays.copyOfRange(original, len, original.length);
             Assertions.assertArrayEquals(z, y);
         }
 
-        // Repeat with toArray2
+
 
         len = set.toArray2(indices);
         x = Arrays.copyOf(indices, len);
         Assertions.assertArrayEquals(e, x);
-        // Check rest of the array is untouched
+
         if (len < indices.length) {
             final int[] y = Arrays.copyOfRange(indices, len, indices.length);
             final int[] z = Arrays.copyOfRange(original, len, original.length);
@@ -242,7 +242,7 @@ class IndexSetTest {
 
     static Stream<Arguments> testForEachToArray() {
         final Stream.Builder<Arguments> builder = Stream.builder();
-        // Add duplicates
+
         builder.accept(Arguments.of(new int[] {1, 1, 1, 2, 3, 4, 5, 6, 7}, 10));
         builder.accept(Arguments.of(new int[] {5, 6, 2, 2, 3, 8, 1, 1, 4, 3}, 10));
         builder.accept(Arguments.of(new int[] {2, 2, 2, 2, 2}, 10));
@@ -285,28 +285,28 @@ class IndexSetTest {
         for (final int size : new int[] {5, 500}) {
             final int[] a = rng.ints(10, 0, size).toArray();
             builder.accept(Arguments.of(a.clone(), size));
-            // Force use of index 0
+
             a[0] = 0;
             builder.accept(Arguments.of(a, size));
         }
-        // Large offset with an index at the end of the range
+
         final int n = 513;
-        // Use 1, 2, or 3 longs for storage
+
         builder.accept(Arguments.of(new int[] {n - 13, n - 1}, n));
         builder.accept(Arguments.of(new int[] {n - 78, n - 1}, n));
         builder.accept(Arguments.of(new int[] {n - 137, n - 1}, n));
-        // Uses a capacity of 512. BitSet will increase this to 512 + 64
-        // to store index 513.
+
+
         builder.accept(Arguments.of(new int[] {1, n - 1}, n));
         return builder.build();
     }
 
-    /**
-     * Creates the index set using the min/max of the indices.
-     *
-     * @param indices Indices.
-     * @return the set
-     */
+
+
+
+
+
+
     private static IndexSet createIndexSet(int[] indices) {
         final int min = Arrays.stream(indices).min().getAsInt();
         final int max = Arrays.stream(indices).max().getAsInt();
@@ -328,7 +328,7 @@ class IndexSetTest {
     @ParameterizedTest
     @MethodSource(value = {"testGetSet", "testCardinality"})
     void testCardinality(int[] indices) {
-        // No compression here but re-use the method for simplicity
+
         Assertions.assertEquals(compressedCardinality(indices, 0), IndexSet.of(indices).cardinality());
     }
 

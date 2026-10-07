@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,13 +21,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/**
- * Tests for {@link Trigamma}.
- */
+
+
+
 class TrigammaTest {
     @ParameterizedTest
     @CsvSource({
-        // Negative integers are poles of the trigamma function
+
         "-1e300, Infinity",
         "-1e18, Infinity",
         "-1e16, Infinity",
@@ -36,9 +36,9 @@ class TrigammaTest {
         "-62, Infinity",
         "-2, Infinity",
         "-1, Infinity",
-        // computed using webMathematica.  For example, to compute trigamma($i) = Polygamma(1, $i), use
-        //
-        // http://functions.wolfram.com/webMathematica/Evaluated.jsp?name=PolyGamma2&plottype=0&vars={%221%22,%22$i%22}&digits=20
+
+
+
         "-98765.4321, 10.332673372988805424",
         "-100.5, 9.8597034918700861520",
         "-63.0001, 1.0000000327412051737e8",
@@ -84,7 +84,7 @@ class TrigammaTest {
         "12345.6789, 0.000081003281325733214110",
     })
     void testTrigamma(double value, double expected) {
-        final double eps = 1e-9; // Allowed relative error.
+        final double eps = 1e-9;
         final double actual = Trigamma.value(value);
         if (Double.isFinite(expected)) {
             Assertions.assertEquals(expected, actual, expected * eps, () -> "trigamma: " + value);

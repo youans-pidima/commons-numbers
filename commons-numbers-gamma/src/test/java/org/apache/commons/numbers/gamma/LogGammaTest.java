@@ -1,19 +1,19 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package org.apache.commons.numbers.gamma;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,13 +21,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Tests for {@link LogGamma}.
- *
- * <p>The class directly calls the methods in {@link BoostGamma}. This test ensures
- * the arguments are passed through correctly. Accuracy of the function is tested
- * in {@link BoostGammaTest}.
- */
+
+
+
+
+
+
+
 class LogGammaTest {
     @ParameterizedTest
     @ValueSource(doubles = {0, -1, -2, Double.NaN})
@@ -36,22 +36,22 @@ class LogGammaTest {
         Assertions.assertEquals(Double.NaN, LogGamma.value(x, null));
     }
 
-    /**
-     * Reference data for the {@link LogGamma#value(double)} function. This data
-     * was generated with the following <a
-     * href="https://maxima.sourceforge.net/">Maxima</a> script.
-     *
-     * <pre>
-     * kill(all);
-     *
-     * fpprec : 64;
-     * x : append(makelist(bfloat(i / 8), i, 1, 80),
-     *     [0.8b0, 1b2, 1b3, 1b4, 1b5, 1b6, 1b7, 1b8, 1b9, 1b10]);
-     *
-     * for i : 1 while i <= length(x) do
-     *     print("\"", float(x[i]), ",", float(log_gamma(x[i])), "\",");
-     * </pre>
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @ParameterizedTest
     @CsvSource(value = {
         "0.125, 2.019418357553796",
@@ -202,7 +202,7 @@ class LogGammaTest {
         "-0.125, 2.1653002489051702517540619481440174064962195287626, -1",
         "-3.125, 0.1543111276840418242676072830970532952413339012367, 1",
         "-52.0009765625, -149.43323093420259741100038126078721302600128285894, -1",
-        // Overflow close to negative poles creates signed infinity
+
         "-171.99999999999997, Infinity, 1",
         "-172.00000000000003, -Infinity, -1",
         "-172.99999999999997, -Infinity, -1",
